@@ -1,0 +1,134 @@
+"use server";
+
+import { createClient } from "@/lib/supabase/server";
+import { z } from "zod";
+import { redirect } from "next/navigation";
+
+const createOrgSchema = z.object({
+  name: z.string().min(2, "Nome deve ter ao menos 2 caracteres").max(80),
+  slug: z
+    .string()
+    .min(2, "Identificador deve ter ao menos 2 caracteres")
+    .max(40)
+    .regex(
+      /^[a-z0-9-]+$/,
+      "Apenas letras minusculas, numeros e hifens"
+    ),
+});
+
+const joinOrgSchema = z.object({
+  slug: z.string().min(2, "Identificador invalido"),
+});
+
+// Cria uma nova organizacao e adiciona o usuario como admin
+export async function createOrg(formData: FormData) {
+  const parsed = createOrgSchema.safeParse({
+    name: formData.get("name"),
+    slug: formData.get("slug"),
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Nao autenticado." };
+
+  // Verifica se o slug ja existe
+  const { data: existing } = await supabase
+    .from("organizations")
+    .select("id")
+    .eq("slug", parsed.data.slug)
+    .single();
+
+  if (existing) {
+    return { error: "Esse identificador ja esta em uso. Escolha outro." };
+  }
+
+  // Cria a org
+  const { data: org, error: orgError } = await supabase
+    .from("organizations")
+    .insert({
+      name: parsed.data.name,
+      slug: parsed.data.slug,
+      created_by: user.id,
+    })
+    .select()
+    .single();
+
+  if (orgError || !org) {
+    return { error: "Erro ao criar organizacao. Tente novamente." };
+  }
+
+  // Adiciona o criador como admin
+  const { error: memberError } = await supabase.from("org_members").insert({
+    org_id: org.id,
+    user_id: user.id,
+    role: "admin",
+    invited_by: user.id,
+  });
+
+  if (memberError) {
+    return { error: "Org criada mas erro ao adicionar membro. Contate o suporte." };
+  }
+
+  redirect("/dashboard");
+}
+
+// Entra em uma organizacao existente pelo slug (como member)
+export async function joinOrg(formData: FormData) {
+  const parsed = joinOrgSchema.safeParse({
+    slug: formData.get("slug"),
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0].message };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Nao autenticado." };
+
+  // Busca a org pelo slug
+  const { data: org } = await supabase
+    .from("organizations")
+    .select("id, name")
+    .eq("slug", parsed.data.slug)
+    .single();
+
+  if (!org) {
+    return { error: "Organizacao nao encontrada. Verifique o identificador." };
+  }
+
+  // Verifica se ja e membro
+  const { data: existing } = await supabase
+    .from("org_members")
+    .select("id")
+    .eq("org_id", org.id)
+    .eq("user_id", user.id)
+    .single();
+
+  if (existing) {
+    redirect("/dashboard");
+  }
+
+  // Adiciona como member
+  const { error } = await supabase.from("org_members").insert({
+    org_id: org.id,
+    user_id: user.id,
+    role: "member",
+  });
+
+  if (error) {
+    return { error: "Erro ao entrar na organizacao. Tente novamente." };
+  }
+
+  redirect("/dashboard");
+}
