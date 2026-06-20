@@ -51,7 +51,7 @@ export function OnboardingFlow() {
 
   return (
     <div className="grid gap-4">
-      {/* Opcao: criar org */}
+      {/* Opcao: criar classe */}
       <Card
         className="cursor-pointer border-2 border-transparent hover:border-brand-accent transition-colors"
         onClick={() => setMode("create")}
@@ -64,15 +64,15 @@ export function OnboardingFlow() {
             <Plus className="w-5 h-5" style={{ color: "#F2542D" }} />
           </div>
           <div>
-            <h3 className="font-semibold mb-1">Criar organização</h3>
+            <h3 className="font-semibold mb-1">Criar sua classe</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Configure o CBSTA para sua igreja ou grupo. Você será o administrador.
+              Configure o Chamas-me Class para sua igreja ou grupo. Você será o administrador.
             </p>
           </div>
         </CardContent>
       </Card>
 
-      {/* Opcao: entrar em org existente */}
+      {/* Opcao: entrar em classe existente */}
       <Card
         className="cursor-pointer border-2 border-transparent hover:border-brand-accent transition-colors"
         onClick={() => setMode("join")}
@@ -85,9 +85,9 @@ export function OnboardingFlow() {
             <LogIn className="w-5 h-5" style={{ color: "#7DAF9C" }} />
           </div>
           <div>
-            <h3 className="font-semibold mb-1">Entrar em uma organização</h3>
+            <h3 className="font-semibold mb-1">Entrar em sua classe</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Já existe uma org do CBSTA na sua igreja. Entre com o identificador.
+              Sua igreja já usa o Chamas-me Class. Entre com o código que o administrador te passou.
             </p>
           </div>
         </CardContent>

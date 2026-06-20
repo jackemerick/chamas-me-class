@@ -10,9 +10,14 @@ export default function OnboardingPage() {
     <main className="min-h-screen flex items-center justify-center bg-brand-dark px-4 py-12">
       <div className="w-full max-w-lg">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-white">Bem-vindo ao CBSTA</h1>
+          <img
+            src="/logo-min.svg"
+            alt="Chamas-me"
+            className="h-10 w-auto mx-auto mb-5"
+          />
+          <h1 className="text-2xl font-bold text-white">Bem-vindo ao Chamas-me Class</h1>
           <p className="text-sm mt-2" style={{ color: "#7DAF9C" }}>
-            Para começar, crie ou entre em uma organização.
+            Para começar, crie ou entre em uma classe.
           </p>
         </div>
         <OnboardingFlow />
