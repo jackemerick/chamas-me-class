@@ -168,49 +168,41 @@ export type Database = {
       };
       class_teachers: {
         Row: {
+          id: string;
           class_id: string;
           user_id: string;
           added_by: string | null;
           created_at: string;
         };
         Insert: {
+          id?: string;
           class_id: string;
           user_id: string;
           added_by?: string | null;
           created_at?: string;
         };
         Update: {
-          class_id?: string;
-          user_id?: string;
           added_by?: string | null;
-          created_at?: string;
         };
         Relationships: [];
       };
-      courses: {
+      access_requests: {
         Row: {
           id: string;
           class_id: string;
-          name: string;
-          description: string | null;
-          created_by: string | null;
+          user_id: string;
+          status: "pending" | "approved" | "rejected";
           created_at: string;
         };
         Insert: {
           id?: string;
           class_id: string;
-          name: string;
-          description?: string | null;
-          created_by?: string | null;
+          user_id: string;
+          status?: "pending" | "approved" | "rejected";
           created_at?: string;
         };
         Update: {
-          id?: string;
-          class_id?: string;
-          name?: string;
-          description?: string | null;
-          created_by?: string | null;
-          created_at?: string;
+          status?: "pending" | "approved" | "rejected";
         };
         Relationships: [];
       };
@@ -254,11 +246,13 @@ export type Database = {
         Row: {
           id: string;
           class_id: string;
-          course_id: string | null;
           date: string;
           theme: string | null;
-          songs: string[] | null;
-          links: { label: string; url: string }[] | null;
+          recurrence: "none" | "weekly" | "biweekly" | "monthly";
+          recurrence_end_date: string | null;
+          responsible_user_id: string | null;
+          music_url: string | null;
+          music_title: string | null;
           notes: string | null;
           created_by: string | null;
           updated_by: string | null;
@@ -268,11 +262,13 @@ export type Database = {
         Insert: {
           id?: string;
           class_id: string;
-          course_id?: string | null;
           date: string;
           theme?: string | null;
-          songs?: string[] | null;
-          links?: { label: string; url: string }[] | null;
+          recurrence?: "none" | "weekly" | "biweekly" | "monthly";
+          recurrence_end_date?: string | null;
+          responsible_user_id?: string | null;
+          music_url?: string | null;
+          music_title?: string | null;
           notes?: string | null;
           created_by?: string | null;
           updated_by?: string | null;
@@ -280,17 +276,15 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
-          id?: string;
-          class_id?: string;
-          course_id?: string | null;
           date?: string;
           theme?: string | null;
-          songs?: string[] | null;
-          links?: { label: string; url: string }[] | null;
+          recurrence?: "none" | "weekly" | "biweekly" | "monthly";
+          recurrence_end_date?: string | null;
+          responsible_user_id?: string | null;
+          music_url?: string | null;
+          music_title?: string | null;
           notes?: string | null;
-          created_by?: string | null;
           updated_by?: string | null;
-          created_at?: string;
           updated_at?: string;
         };
         Relationships: [];

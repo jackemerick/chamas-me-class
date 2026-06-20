@@ -4,6 +4,7 @@ import type { User } from "@supabase/supabase-js";
 import { usePathname } from "next/navigation";
 import { AppSidebar } from "./app-sidebar";
 import { AppTopbar } from "./app-topbar";
+import { BottomNav } from "./bottom-nav";
 
 interface OrgBasic {
   id: string;
@@ -34,6 +35,8 @@ export function AppShell({ user, membership, allOrgs, children }: AppShellProps)
     return <div className="min-h-screen bg-brand-dark">{children}</div>;
   }
 
+  const isAdmin = membership.role === "admin" || membership.role === "superadmin";
+
   return (
     <div className="flex h-screen overflow-hidden">
       <AppSidebar
@@ -45,10 +48,11 @@ export function AppShell({ user, membership, allOrgs, children }: AppShellProps)
       />
       <div className="flex flex-col flex-1 overflow-hidden">
         <AppTopbar user={user} orgName={org?.name ?? ""} />
-        <main className="flex-1 overflow-y-auto bg-brand-light p-4 md:p-6">
+        <main className="flex-1 overflow-y-auto bg-brand-light p-4 md:p-6 pb-20 md:pb-6">
           {children}
         </main>
       </div>
+      <BottomNav isAdmin={isAdmin} />
     </div>
   );
 }
