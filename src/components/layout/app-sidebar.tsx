@@ -135,24 +135,23 @@ export function AppSidebar({ org, role, currentPath, allOrgs, activeOrgId }: Sid
         {navItems.map((item) => {
           const active = isActive(item.href);
           return (
-            <ListItemButton
-              key={item.href}
-              component={Link}
-              href={item.href}
-              selected={active}
-              sx={{
-                borderRadius: 2,
-                mb: 0.5,
-                color: active ? "white" : "rgba(255,255,255,0.65)",
-                bgcolor: active ? "rgba(255,255,255,0.15) !important" : "transparent",
-                "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
-              }}
-            >
-              <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText primary={item.label} slotProps={{ primary: { style: { fontSize: 14, fontWeight: active ? 600 : 400 } } }} />
-            </ListItemButton>
+            <Link key={item.href} href={item.href} style={{ textDecoration: "none" }}>
+              <ListItemButton
+                selected={active}
+                sx={{
+                  borderRadius: 2,
+                  mb: 0.5,
+                  color: active ? "white" : "rgba(255,255,255,0.65)",
+                  bgcolor: active ? "rgba(255,255,255,0.15) !important" : "transparent",
+                  "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
+                }}
+              >
+                <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText primary={item.label} slotProps={{ primary: { style: { fontSize: 14, fontWeight: active ? 600 : 400 } } }} />
+              </ListItemButton>
+            </Link>
           );
         })}
 
@@ -162,23 +161,23 @@ export function AppSidebar({ org, role, currentPath, allOrgs, activeOrgId }: Sid
             <Typography variant="caption" sx={{ px: 1.5, color: "rgba(255,255,255,0.35)", fontWeight: 600, textTransform: "uppercase", letterSpacing: 1 }}>
               Admin
             </Typography>
-            <ListItemButton
-              component={Link}
-              href="/admin"
-              selected={isActive("/admin")}
-              sx={{
-                borderRadius: 2,
-                mt: 0.5,
-                color: isActive("/admin") ? "white" : "rgba(255,255,255,0.65)",
-                bgcolor: isActive("/admin") ? "rgba(255,255,255,0.15) !important" : "transparent",
-                "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
-              }}
-            >
-              <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
-                <AdminPanelSettingsRoundedIcon />
-              </ListItemIcon>
-              <ListItemText primary="Administração" slotProps={{ primary: { style: { fontSize: 14 } } }} />
-            </ListItemButton>
+            <Link href="/admin" style={{ textDecoration: "none" }}>
+              <ListItemButton
+                selected={isActive("/admin")}
+                sx={{
+                  borderRadius: 2,
+                  mt: 0.5,
+                  color: isActive("/admin") ? "white" : "rgba(255,255,255,0.65)",
+                  bgcolor: isActive("/admin") ? "rgba(255,255,255,0.15) !important" : "transparent",
+                  "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
+                }}
+              >
+                <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
+                  <AdminPanelSettingsRoundedIcon />
+                </ListItemIcon>
+                <ListItemText primary="Administração" slotProps={{ primary: { style: { fontSize: 14 } } }} />
+              </ListItemButton>
+            </Link>
           </>
         )}
       </List>
