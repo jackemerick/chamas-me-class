@@ -62,11 +62,11 @@ export function CreateClassButton({ orgId }: CreateClassButtonProps) {
     });
 
     if (error) {
-      toast.error("Erro ao criar turma. Tente novamente.");
+      toast.error("Erro ao criar classe. Tente novamente.");
       return;
     }
 
-    toast.success("Turma criada com sucesso!");
+    toast.success("Classe criada com sucesso!");
     reset();
     setOpen(false);
     router.refresh();
@@ -76,15 +76,15 @@ export function CreateClassButton({ orgId }: CreateClassButtonProps) {
     return (
       <Card className="w-full max-w-sm shadow-lg border border-border">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Nova turma</CardTitle>
+          <CardTitle className="text-base">Nova classe</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="class-name">Nome da turma</Label>
+              <Label htmlFor="class-name">Nome da classe</Label>
               <Input
                 id="class-name"
-                placeholder="Ex: Turma dos Juniores"
+                placeholder="Ex: Classe dos Juniores"
                 autoFocus
                 {...register("name")}
               />
@@ -131,7 +131,7 @@ export function CreateClassButton({ orgId }: CreateClassButtonProps) {
                 {isSubmitting ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
-                  "Criar turma"
+                  "Criar classe"
                 )}
               </Button>
             </div>
@@ -148,7 +148,7 @@ export function CreateClassButton({ orgId }: CreateClassButtonProps) {
       className="gap-2"
     >
       <Plus className="w-4 h-4" />
-      Nova turma
+      Nova classe
     </Button>
   );
 }

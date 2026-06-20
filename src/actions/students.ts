@@ -60,13 +60,13 @@ export async function verificarDuplicata(data: {
 
   if (!found) return { duplicate: false };
 
-  const className = orgClasses.find((c) => c.id === found.class_id)?.name ?? "outra turma";
+  const className = orgClasses.find((c) => c.id === found.class_id)?.name ?? "outra classe";
   return { duplicate: true, student: { id: found.id, name: found.name, class_name: className } };
 }
 
 export async function criarAluno(formData: FormData) {
   const classId = formData.get("class_id") as string;
-  if (!classId) return { error: "Turma não informada." };
+  if (!classId) return { error: "Classe não informada." };
 
   const parsed = studentSchema.safeParse({
     name: formData.get("name"),

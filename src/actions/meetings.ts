@@ -8,7 +8,7 @@ import { cookies } from "next/headers";
 import { z } from "zod";
 
 const meetingSchema = z.object({
-  class_id: z.string().uuid("Selecione uma turma"),
+  class_id: z.string().uuid("Selecione uma classe"),
   date: z.string().min(1, "Informe a data"),
   theme: z.string().min(1, "Informe o tema").max(120),
   recurrence: z.enum(["none", "weekly", "biweekly", "monthly"]).default("none"),
