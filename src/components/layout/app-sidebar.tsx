@@ -60,7 +60,7 @@ export function AppSidebar({ org, role, currentPath }: SidebarProps) {
           )}
           <div className="flex-1 min-w-0">
             <p className="text-white text-sm font-semibold truncate">
-              {org?.name ?? "CBSTA"}
+              {org?.name ?? "Chamas-me Class"}
             </p>
             <p className="text-white/50 text-xs capitalize">{role}</p>
           </div>

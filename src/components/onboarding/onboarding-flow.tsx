@@ -32,7 +32,7 @@ const createSchema = z.object({
 
 // Schema de entrada
 const joinSchema = z.object({
-  slug: z.string().min(2, "Informe o identificador da organização"),
+  slug: z.string().min(2, "Informe o identificador da sua igreja"),
 });
 
 type CreateForm = z.infer<typeof createSchema>;
@@ -131,7 +131,7 @@ function CreateOrgForm({ onBack }: { onBack: () => void }) {
   return (
     <Card className="border-0 shadow-xl">
       <CardHeader>
-        <CardTitle>Criar organização</CardTitle>
+        <CardTitle>Criar sua igreja</CardTitle>
         <CardDescription>
           Informe o nome da sua igreja ou grupo.
         </CardDescription>
@@ -139,7 +139,7 @@ function CreateOrgForm({ onBack }: { onBack: () => void }) {
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Nome da organização</Label>
+            <Label htmlFor="name">Nome da igreja ou grupo</Label>
             <Input
               id="name"
               placeholder="Ex: Igreja Batista Central"
@@ -193,7 +193,7 @@ function CreateOrgForm({ onBack }: { onBack: () => void }) {
                   Criando...
                 </>
               ) : (
-                "Criar organização"
+                "Criar igreja"
               )}
             </Button>
           </div>
@@ -225,15 +225,15 @@ function JoinOrgForm({ onBack }: { onBack: () => void }) {
   return (
     <Card className="border-0 shadow-xl">
       <CardHeader>
-        <CardTitle>Entrar em uma organização</CardTitle>
+        <CardTitle>Entrar em sua igreja</CardTitle>
         <CardDescription>
-          Solicite o identificador ao administrador da sua org.
+          Solicite o código ao administrador da sua igreja.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="slug">Identificador da organização</Label>
+            <Label htmlFor="slug">Código da igreja</Label>
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground shrink-0">cbsta.me/</span>
               <Input
