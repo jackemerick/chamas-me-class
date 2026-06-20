@@ -13,6 +13,8 @@ interface Meeting {
   date: string;
   theme: string | null;
   class_name: string;
+  class_id: string;
+  concluded: boolean;
 }
 
 interface CalendarProps {

@@ -18,6 +18,7 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import ExpandLessRoundedIcon from "@mui/icons-material/ExpandLessRounded";
+import Link from "next/link";
 import { AgendaCalendar } from "./calendar";
 import { MeetingForm } from "./meeting-form";
 
@@ -26,6 +27,8 @@ interface Meeting {
   date: string;
   theme: string | null;
   class_name: string;
+  class_id: string;
+  concluded: boolean;
 }
 
 interface ClassOption { id: string; name: string }
@@ -105,9 +108,14 @@ export function AgendaClient({ meetings, nextMeeting, classes }: AgendaClientPro
             </Box>
             <Collapse in={nextExpanded}>
               <Divider sx={{ my: 1.5 }} />
-              <Typography variant="caption" color="text.secondary">
-                {formatDate(nextMeeting.date)}
-              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <Typography variant="caption" color="text.secondary">
+                  {formatDate(nextMeeting.date)}
+                </Typography>
+                <Link href={`/turmas/${nextMeeting.class_id}/encontros/${nextMeeting.id}`} style={{ textDecoration: "none" }}>
+                  <Button size="small" variant="text" sx={{ fontSize: 12 }}>Abrir encontro</Button>
+                </Link>
+              </Box>
             </Collapse>
           </CardContent>
         </Card>
@@ -133,18 +141,21 @@ export function AgendaClient({ meetings, nextMeeting, classes }: AgendaClientPro
               {selectedDay.meetings.map((m, idx) => (
                 <Box key={m.id}>
                   {idx > 0 && <Divider />}
-                  <ListItem disablePadding sx={{ py: 1 }}>
-                    <ListItemText
-                      primary={
-                        <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>
-                          {m.theme ?? "Sem tema"}
-                        </Typography>
-                      }
-                      secondary={
-                        <Typography variant="caption" color="text.secondary">{m.class_name}</Typography>
-                      }
-                    />
-                  </ListItem>
+                  <Link href={`/turmas/${m.class_id}/encontros/${m.id}`} style={{ textDecoration: "none", color: "inherit", display: "block" }}>
+                    <ListItem disablePadding sx={{ py: 1, px: 1, borderRadius: 2, "&:hover": { bgcolor: "action.hover" }, cursor: "pointer" }}>
+                      <ListItemText
+                        primary={
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                            <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>{m.theme ?? "Sem tema"}</Typography>
+                            {m.concluded && <Chip label="Concluído" size="small" sx={{ height: 18, fontSize: 10, bgcolor: "#7DAF9C20", color: "#7DAF9C" }} />}
+                          </Box>
+                        }
+                        secondary={
+                          <Typography variant="caption" color="text.secondary">{m.class_name}</Typography>
+                        }
+                      />
+                    </ListItem>
+                  </Link>
                 </Box>
               ))}
             </List>

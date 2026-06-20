@@ -25,23 +25,15 @@ export default async function AgendaPage() {
 
   if (!activeOrgId) redirect("/onboarding");
 
-  // Turmas visíveis: admin vê todas, member vê só as suas
   let classIds: string[] = [];
-  if (myRole === "admin") {
-    const { data: allClasses } = await admin
-      .from("classes")
-      .select("id")
-      .eq("org_id", activeOrgId);
-    classIds = allClasses?.map(c => c.id) ?? [];
+  if (myRole === "admin" || myRole === "superadmin") {
+    const { data } = await admin.from("classes").select("id").eq("org_id", activeOrgId);
+    classIds = data?.map(c => c.id) ?? [];
   } else {
-    const { data: myClasses } = await admin
-      .from("class_teachers")
-      .select("class_id")
-      .eq("user_id", user.id);
-    classIds = myClasses?.map(c => c.class_id) ?? [];
+    const { data } = await admin.from("class_teachers").select("class_id").eq("user_id", user.id);
+    classIds = data?.map(c => c.class_id) ?? [];
   }
 
-  // Busca encontros dos próximos 12 meses + passados do mês atual
   const now = new Date();
   const from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
   const to = new Date(now.getFullYear() + 1, now.getMonth(), now.getDate()).toISOString().split("T")[0];
@@ -49,19 +41,17 @@ export default async function AgendaPage() {
   const { data: meetings } = classIds.length > 0
     ? await admin
         .from("meetings")
-        .select("id, date, theme, class_id")
+        .select("id, date, theme, class_id, concluded")
         .in("class_id", classIds)
         .gte("date", from)
         .lte("date", to)
         .order("date")
     : { data: [] };
 
-  // Turmas para o formulário
-  const { data: classes } = myRole === "admin"
+  const { data: classes } = myRole === "admin" || myRole === "superadmin"
     ? await admin.from("classes").select("id, name").eq("org_id", activeOrgId).order("name")
     : await admin.from("classes").select("id, name").in("id", classIds).order("name");
 
-  // Busca nomes das turmas separadamente para evitar problema de join nos tipos
   const meetingClassIds = [...new Set((meetings ?? []).map(m => m.class_id))];
   const { data: classNames } = meetingClassIds.length > 0
     ? await admin.from("classes").select("id, name").in("id", meetingClassIds)
@@ -72,10 +62,13 @@ export default async function AgendaPage() {
     id: m.id,
     date: m.date,
     theme: m.theme,
+    class_id: m.class_id,
     class_name: classNameMap[m.class_id] ?? "",
+    concluded: m.concluded ?? false,
   }));
 
-  const nextMeeting = meetingsFormatted.find(m => m.date >= now.toISOString().split("T")[0]) ?? null;
+  const today = now.toISOString().split("T")[0];
+  const nextMeeting = meetingsFormatted.find(m => m.date >= today) ?? null;
 
   return (
     <AgendaClient

@@ -254,6 +254,8 @@ export type Database = {
           music_url: string | null;
           music_title: string | null;
           notes: string | null;
+          concluded: boolean;
+          concluded_at: string | null;
           created_by: string | null;
           updated_by: string | null;
           created_at: string;
@@ -270,6 +272,8 @@ export type Database = {
           music_url?: string | null;
           music_title?: string | null;
           notes?: string | null;
+          concluded?: boolean;
+          concluded_at?: string | null;
           created_by?: string | null;
           updated_by?: string | null;
           created_at?: string;
@@ -284,6 +288,8 @@ export type Database = {
           music_url?: string | null;
           music_title?: string | null;
           notes?: string | null;
+          concluded?: boolean;
+          concluded_at?: string | null;
           updated_by?: string | null;
           updated_at?: string;
         };
