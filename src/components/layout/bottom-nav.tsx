@@ -16,7 +16,7 @@ interface BottomNavProps {
 
 const routes = [
   { value: "/dashboard", label: "Início", icon: <HomeRoundedIcon /> },
-  { value: "/turmas", label: "Turmas", icon: <MenuBookRoundedIcon /> },
+  { value: "/turmas", label: "Classe", icon: <MenuBookRoundedIcon /> },
   { value: "/agenda", label: "Agenda", icon: <CalendarMonthRoundedIcon /> },
   { value: "/pontos", label: "Pontos", icon: <EmojiEventsRoundedIcon /> },
 ];

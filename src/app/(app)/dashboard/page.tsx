@@ -37,9 +37,9 @@ export default async function DashboardPage() {
     <Box>
       <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", mb: 3, gap: 2 }}>
         <Box>
-          <Typography variant="h5" sx={{ fontWeight: 800 }}>Turmas</Typography>
+          <Typography variant="h5" sx={{ fontWeight: 800 }}>Classes</Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
-            {classes?.length ?? 0} {classes?.length === 1 ? "turma ativa" : "turmas ativas"}
+            {classes?.length ?? 0} {classes?.length === 1 ? "classe ativa" : "classes ativas"}
           </Typography>
         </Box>
         <NewClassButton />
@@ -62,9 +62,9 @@ export default async function DashboardPage() {
           <Box sx={{ width: 64, height: 64, borderRadius: 3, bgcolor: "#33403514", display: "flex", alignItems: "center", justifyContent: "center", mb: 2 }}>
             <MenuBookRoundedIcon sx={{ color: "primary.main", fontSize: 32 }} />
           </Box>
-          <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>Nenhuma turma ainda</Typography>
+          <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>Nenhuma classe ainda</Typography>
           <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 280, mb: 3 }}>
-            Crie a primeira turma para começar a gerenciar alunos, encontros e presença.
+            Crie a primeira classe para começar a gerenciar alunos, encontros e presença.
           </Typography>
           <NewClassButton />
         </Box>

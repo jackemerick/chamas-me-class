@@ -1,13 +1,15 @@
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { cookies } from "next/headers";
 import { ClassCard } from "@/components/classes/class-card";
 import { NewClassButton } from "@/components/turmas/new-class-button";
-import { BookOpen } from "lucide-react";
+import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 
-export const metadata: Metadata = { title: "Turmas" };
+export const metadata: Metadata = { title: "Classes" };
 
 export default async function TurmasPage() {
   const supabase = await createClient();
@@ -32,19 +34,19 @@ export default async function TurmasPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">Turmas</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            {classes?.length ?? 0} {classes?.length === 1 ? "turma ativa" : "turmas ativas"}
-          </p>
-        </div>
+    <Box>
+      <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", mb: 3, gap: 2 }}>
+        <Box>
+          <Typography variant="h5" sx={{ fontWeight: 800 }}>Classes</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
+            {classes?.length ?? 0} {classes?.length === 1 ? "classe ativa" : "classes ativas"}
+          </Typography>
+        </Box>
         <NewClassButton />
-      </div>
+      </Box>
 
       {classes && classes.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <Box sx={{ display: "grid", gap: 2, gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" } }}>
           {classes.map((cls) => (
             <ClassCard
               key={cls.id}
@@ -54,19 +56,19 @@ export default async function TurmasPage() {
               studentCount={Array.isArray(cls.students) ? cls.students.length : 0}
             />
           ))}
-        </div>
+        </Box>
       ) : (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ backgroundColor: "#33403520" }}>
-            <BookOpen className="w-8 h-8" style={{ color: "#334035" }} />
-          </div>
-          <h3 className="text-lg font-semibold mb-2">Nenhuma turma ainda</h3>
-          <p className="text-sm text-muted-foreground max-w-xs mb-6">
-            Crie a primeira turma para começar a gerenciar alunos e encontros.
-          </p>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", py: 12, textAlign: "center" }}>
+          <Box sx={{ width: 64, height: 64, borderRadius: 3, bgcolor: "#33403514", display: "flex", alignItems: "center", justifyContent: "center", mb: 2 }}>
+            <MenuBookRoundedIcon sx={{ color: "primary.main", fontSize: 32 }} />
+          </Box>
+          <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>Nenhuma classe ainda</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 280, mb: 3 }}>
+            Crie a primeira classe para começar a gerenciar alunos e encontros.
+          </Typography>
           <NewClassButton />
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }

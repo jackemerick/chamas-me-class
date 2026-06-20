@@ -46,7 +46,7 @@ export async function criarTurma(formData: FormData) {
     updated_by: user.id,
   }).select("id").single();
 
-  if (error || !data) return { error: "Erro ao criar turma." };
+  if (error || !data) return { error: "Erro ao criar classe." };
 
   revalidatePath("/dashboard");
   revalidatePath("/turmas");
@@ -92,7 +92,7 @@ export async function excluirTurma(formData: FormData) {
 
   const admin = createAdminClient();
   const { error } = await admin.from("classes").delete().eq("id", id);
-  if (error) return { error: "Erro ao excluir turma." };
+  if (error) return { error: "Erro ao excluir classe." };
 
   revalidatePath("/dashboard");
   revalidatePath("/turmas");

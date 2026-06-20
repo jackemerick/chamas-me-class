@@ -43,7 +43,7 @@ export function ClassForm({ mode, defaultValues, onCancel }: ClassFormProps) {
 
   async function handleDelete() {
     if (!defaultValues) return;
-    if (!confirm("Excluir esta turma? Todos os dados serão perdidos.")) return;
+    if (!confirm("Excluir esta classe? Todos os dados serão perdidos.")) return;
     setDeleting(true);
     const formData = new FormData();
     formData.set("id", defaultValues.id);
@@ -56,8 +56,8 @@ export function ClassForm({ mode, defaultValues, onCancel }: ClassFormProps) {
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       <TextField
-        label="Nome da turma"
-        placeholder="Ex: Turma dos Juniores"
+        label="Nome da classe"
+        placeholder="Ex: Classe dos Juniores"
         autoFocus
         error={!!errors.name}
         helperText={errors.name?.message}
@@ -74,7 +74,7 @@ export function ClassForm({ mode, defaultValues, onCancel }: ClassFormProps) {
         </Button>
         <Button type="submit" variant="contained" disabled={isSubmitting} fullWidth
           startIcon={isSubmitting ? <CircularProgress size={16} color="inherit" /> : undefined}>
-          {isSubmitting ? "Salvando..." : mode === "create" ? "Criar turma" : "Salvar"}
+          {isSubmitting ? "Salvando..." : mode === "create" ? "Criar classe" : "Salvar"}
         </Button>
       </Box>
 
@@ -89,7 +89,7 @@ export function ClassForm({ mode, defaultValues, onCancel }: ClassFormProps) {
             disabled={deleting || isSubmitting}
             fullWidth
           >
-            Excluir turma
+            Excluir classe
           </Button>
         </>
       )}

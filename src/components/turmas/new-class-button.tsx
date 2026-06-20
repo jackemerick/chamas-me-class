@@ -16,7 +16,7 @@ export function NewClassButton() {
     return (
       <Box sx={{ width: "100%", maxWidth: 420 }}>
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
-          <Typography sx={{ fontWeight: 700 }}>Nova turma</Typography>
+          <Typography sx={{ fontWeight: 700 }}>Nova classe</Typography>
           <IconButton size="small" onClick={() => setOpen(false)}>
             <CloseRoundedIcon fontSize="small" />
           </IconButton>
@@ -32,7 +32,7 @@ export function NewClassButton() {
       startIcon={<AddRoundedIcon />}
       onClick={() => setOpen(true)}
     >
-      Nova turma
+      Nova classe
     </Button>
   );
 }

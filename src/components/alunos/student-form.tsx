@@ -95,7 +95,7 @@ export function StudentForm({ mode, classId, defaultValues }: StudentFormProps) 
 
   async function handleDelete() {
     if (!defaultValues) return;
-    if (!confirm("Excluir este aluno da turma?")) return;
+    if (!confirm("Excluir este aluno da classe?")) return;
     setDeleting(true);
     const formData = new FormData();
     formData.set("id", defaultValues.id);
@@ -144,7 +144,7 @@ export function StudentForm({ mode, classId, defaultValues }: StudentFormProps) 
               <div className="flex gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "#b58a00" }} />
                 <p className="text-sm" style={{ color: "#b58a00" }}>
-                  <strong>{duplicate.name}</strong> já está cadastrado em <strong>{duplicate.class_name}</strong>. Deseja vincular este aluno à turma atual em vez de criar um novo cadastro?
+                  <strong>{duplicate.name}</strong> já está cadastrado em <strong>{duplicate.class_name}</strong>. Deseja vincular este aluno à classe atual em vez de criar um novo cadastro?
                 </p>
               </div>
               <div className="flex gap-2">
@@ -212,7 +212,7 @@ export function StudentForm({ mode, classId, defaultValues }: StudentFormProps) 
                 disabled={deleting || isSubmitting}
               >
                 {deleting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Trash2 className="w-4 h-4 mr-2" />}
-                Remover da turma
+                Remover da classe
               </Button>
             </div>
           )}

@@ -18,7 +18,7 @@ import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import { criarEncontro, editarEncontro, excluirEncontro, buscarTituloMusica } from "@/actions/meetings";
 
 const schema = z.object({
-  class_id: z.string().uuid("Selecione uma turma"),
+  class_id: z.string().uuid("Selecione uma classe"),
   date: z.string().min(1, "Informe a data"),
   theme: z.string().min(1, "Informe o tema").max(120),
   recurrence: z.enum(["none", "weekly", "biweekly", "monthly"]),
@@ -114,13 +114,13 @@ export function MeetingForm({ classes, defaultValues, onCancel }: MeetingFormPro
 
       <TextField
         select
-        label="Turma"
+        label="Classe"
         defaultValue={defaultValues?.class_id ?? ""}
         error={!!errors.class_id}
         helperText={errors.class_id?.message}
         {...register("class_id", { onChange: handleClassChange })}
       >
-        <MenuItem value="">Selecione uma turma</MenuItem>
+        <MenuItem value="">Selecione uma classe</MenuItem>
         {classes.map((c) => (
           <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>
         ))}
