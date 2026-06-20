@@ -41,7 +41,7 @@ interface SidebarProps {
 
 const navItems = [
   { href: "/dashboard", label: "Início", icon: <HomeRoundedIcon /> },
-  { href: "/turmas", label: "Classe", icon: <MenuBookRoundedIcon /> },
+  { href: "/turmas", label: "Classes", icon: <MenuBookRoundedIcon /> },
   { href: "/agenda", label: "Agenda", icon: <CalendarMonthRoundedIcon /> },
   { href: "/pontos", label: "Pontos", icon: <EmojiEventsRoundedIcon /> },
 ];
