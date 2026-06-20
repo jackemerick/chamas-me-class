@@ -7,9 +7,9 @@ import { ClassCard } from "@/components/classes/class-card";
 import { NewClassButton } from "@/components/turmas/new-class-button";
 import { BookOpen } from "lucide-react";
 
-export const metadata: Metadata = { title: "Dashboard" };
+export const metadata: Metadata = { title: "Turmas" };
 
-export default async function DashboardPage() {
+export default async function TurmasPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -35,7 +35,7 @@ export default async function DashboardPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Turmas</h1>
+          <h1 className="text-2xl font-bold">Turmas</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             {classes?.length ?? 0} {classes?.length === 1 ? "turma ativa" : "turmas ativas"}
           </p>
@@ -62,7 +62,7 @@ export default async function DashboardPage() {
           </div>
           <h3 className="text-lg font-semibold mb-2">Nenhuma turma ainda</h3>
           <p className="text-sm text-muted-foreground max-w-xs mb-6">
-            Crie a primeira turma para começar a gerenciar alunos, encontros e presença.
+            Crie a primeira turma para começar a gerenciar alunos e encontros.
           </p>
           <NewClassButton />
         </div>
