@@ -80,7 +80,7 @@ export default async function DashboardPage() {
           </div>
           <h3 className="text-lg font-semibold mb-2">Nenhuma turma ainda</h3>
           <p className="text-sm text-muted-foreground max-w-xs mb-6">
-            Crie a primeira turma para comecar a gerenciar alunos, encontros e presenca.
+            Crie a primeira turma para começar a gerenciar alunos, encontros e presença.
           </p>
           <CreateClassButton orgId={membership.org_id} />
         </div>

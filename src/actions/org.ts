@@ -12,12 +12,12 @@ const createOrgSchema = z.object({
     .max(40)
     .regex(
       /^[a-z0-9-]+$/,
-      "Apenas letras minusculas, numeros e hifens"
+      "Apenas letras minúsculas, números e hífens"
     ),
 });
 
 const joinOrgSchema = z.object({
-  slug: z.string().min(2, "Identificador invalido"),
+  slug: z.string().min(2, "Identificador inválido"),
 });
 
 // Cria uma nova organizacao e adiciona o usuario como admin
@@ -36,7 +36,7 @@ export async function createOrg(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) return { error: "Nao autenticado." };
+  if (!user) return { error: "Não autenticado." };
 
   // Verifica se o slug ja existe
   const { data: existing } = await supabase
@@ -46,7 +46,7 @@ export async function createOrg(formData: FormData) {
     .single();
 
   if (existing) {
-    return { error: "Esse identificador ja esta em uso. Escolha outro." };
+    return { error: "Esse identificador já está em uso. Escolha outro." };
   }
 
   // Cria a org
@@ -61,7 +61,7 @@ export async function createOrg(formData: FormData) {
     .single();
 
   if (orgError || !org) {
-    return { error: "Erro ao criar organizacao. Tente novamente." };
+    return { error: "Erro ao criar organização. Tente novamente." };
   }
 
   // Adiciona o criador como admin
@@ -73,7 +73,7 @@ export async function createOrg(formData: FormData) {
   });
 
   if (memberError) {
-    return { error: "Org criada mas erro ao adicionar membro. Contate o suporte." };
+    return { error: "Organização criada, mas houve um erro ao adicionar o membro. Contate o suporte." };
   }
 
   redirect("/dashboard");
@@ -94,7 +94,7 @@ export async function joinOrg(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) return { error: "Nao autenticado." };
+  if (!user) return { error: "Não autenticado." };
 
   // Busca a org pelo slug
   const { data: org } = await supabase
@@ -104,7 +104,7 @@ export async function joinOrg(formData: FormData) {
     .single();
 
   if (!org) {
-    return { error: "Organizacao nao encontrada. Verifique o identificador." };
+    return { error: "Organização não encontrada. Verifique o identificador." };
   }
 
   // Verifica se ja e membro
@@ -127,7 +127,7 @@ export async function joinOrg(formData: FormData) {
   });
 
   if (error) {
-    return { error: "Erro ao entrar na organizacao. Tente novamente." };
+    return { error: "Erro ao entrar na organização. Tente novamente." };
   }
 
   redirect("/dashboard");

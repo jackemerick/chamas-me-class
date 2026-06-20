@@ -22,17 +22,17 @@ type Mode = "choose" | "create" | "join";
 
 // Schema de criacao
 const createSchema = z.object({
-  name: z.string().min(2, "Minimo 2 caracteres").max(80),
+  name: z.string().min(2, "Mínimo 2 caracteres").max(80),
   slug: z
     .string()
-    .min(2, "Minimo 2 caracteres")
+    .min(2, "Mínimo 2 caracteres")
     .max(40)
-    .regex(/^[a-z0-9-]+$/, "Apenas letras minusculas, numeros e hifens"),
+    .regex(/^[a-z0-9-]+$/, "Apenas letras minúsculas, números e hífens"),
 });
 
 // Schema de entrada
 const joinSchema = z.object({
-  slug: z.string().min(2, "Informe o identificador da organizacao"),
+  slug: z.string().min(2, "Informe o identificador da organização"),
 });
 
 type CreateForm = z.infer<typeof createSchema>;
@@ -64,9 +64,9 @@ export function OnboardingFlow() {
             <Plus className="w-5 h-5" style={{ color: "#F2542D" }} />
           </div>
           <div>
-            <h3 className="font-semibold mb-1">Criar organizacao</h3>
+            <h3 className="font-semibold mb-1">Criar organização</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Configure o CBSTA para sua igreja ou grupo. Voce sera o administrador.
+              Configure o CBSTA para sua igreja ou grupo. Você será o administrador.
             </p>
           </div>
         </CardContent>
@@ -85,9 +85,9 @@ export function OnboardingFlow() {
             <LogIn className="w-5 h-5" style={{ color: "#7DAF9C" }} />
           </div>
           <div>
-            <h3 className="font-semibold mb-1">Entrar em uma organizacao</h3>
+            <h3 className="font-semibold mb-1">Entrar em uma organização</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Ja existe uma org do CBSTA na sua igreja. Entre com o identificador.
+              Já existe uma org do CBSTA na sua igreja. Entre com o identificador.
             </p>
           </div>
         </CardContent>
@@ -131,7 +131,7 @@ function CreateOrgForm({ onBack }: { onBack: () => void }) {
   return (
     <Card className="border-0 shadow-xl">
       <CardHeader>
-        <CardTitle>Criar organizacao</CardTitle>
+        <CardTitle>Criar organização</CardTitle>
         <CardDescription>
           Informe o nome da sua igreja ou grupo.
         </CardDescription>
@@ -139,7 +139,7 @@ function CreateOrgForm({ onBack }: { onBack: () => void }) {
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Nome da organizacao</Label>
+            <Label htmlFor="name">Nome da organização</Label>
             <Input
               id="name"
               placeholder="Ex: Igreja Batista Central"
@@ -155,7 +155,7 @@ function CreateOrgForm({ onBack }: { onBack: () => void }) {
             <Label htmlFor="slug">
               Identificador{" "}
               <span className="text-muted-foreground font-normal">
-                (unico, nao pode mudar depois)
+                (único, não pode mudar depois)
               </span>
             </Label>
             <div className="flex items-center gap-2">
@@ -193,7 +193,7 @@ function CreateOrgForm({ onBack }: { onBack: () => void }) {
                   Criando...
                 </>
               ) : (
-                "Criar organizacao"
+                "Criar organização"
               )}
             </Button>
           </div>
@@ -225,7 +225,7 @@ function JoinOrgForm({ onBack }: { onBack: () => void }) {
   return (
     <Card className="border-0 shadow-xl">
       <CardHeader>
-        <CardTitle>Entrar em uma organizacao</CardTitle>
+        <CardTitle>Entrar em uma organização</CardTitle>
         <CardDescription>
           Solicite o identificador ao administrador da sua org.
         </CardDescription>
@@ -233,7 +233,7 @@ function JoinOrgForm({ onBack }: { onBack: () => void }) {
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="slug">Identificador da organizacao</Label>
+            <Label htmlFor="slug">Identificador da organização</Label>
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground shrink-0">cbsta.me/</span>
               <Input

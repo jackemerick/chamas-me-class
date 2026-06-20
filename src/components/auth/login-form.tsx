@@ -19,7 +19,7 @@ import {
 import { sendMagicLink } from "@/actions/auth";
 
 const schema = z.object({
-  email: z.string().email("Digite um e-mail valido"),
+  email: z.string().email("Digite um e-mail válido"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -76,7 +76,7 @@ export function LoginForm({ searchParams }: LoginFormProps) {
             Clique no link para entrar no app.
           </p>
           <p className="text-xs text-muted-foreground mt-4">
-            Nao recebeu?{" "}
+            Não recebeu?{" "}
             <button
               onClick={() => setSent(false)}
               className="underline hover:no-underline cursor-pointer"
@@ -104,7 +104,7 @@ export function LoginForm({ searchParams }: LoginFormProps) {
             className="mb-4 p-3 rounded-lg text-sm"
             style={{ backgroundColor: "#F2542D20", color: "#F2542D" }}
           >
-            O link expirou ou e invalido. Solicite um novo.
+            O link expirou ou é inválido. Solicite um novo.
           </div>
         )}
 

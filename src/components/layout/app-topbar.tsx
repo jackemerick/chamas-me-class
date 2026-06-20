@@ -24,7 +24,7 @@ export function AppTopbar({ user, orgName }: AppTopbarProps) {
 
   async function handleSignOut() {
     await signOut();
-    toast.success("Voce saiu da conta.");
+    toast.success("Você saiu da conta.");
     // Middleware vai redirecionar para /login automaticamente
     window.location.href = "/login";
   }

@@ -25,7 +25,7 @@ export default function LoginPage({
           </div>
           <h1 className="text-2xl font-bold text-white">Chamas-me Class</h1>
           <p className="text-sm mt-1" style={{ color: "#7DAF9C" }}>
-            Gestao de classes biblicas
+            Gestão de classes bíblicas
           </p>
         </div>
 

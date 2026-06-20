@@ -19,10 +19,10 @@ export const metadata: Metadata = {
     template: "%s | Chamas-me Class",
   },
   description:
-    "Gestao de classes biblicas Chamas-me. Turmas, alunos, presenca, pontos e certificados.",
+    "Gestão de classes bíblicas Chamas-me. Turmas, alunos, presença, pontos e certificados.",
   openGraph: {
     title: "Chamas-me Class",
-    description: "Gestao de classes biblicas para professores e organizadores.",
+    description: "Gestão de classes bíblicas para professores e organizadores.",
     locale: "pt_BR",
     type: "website",
   },

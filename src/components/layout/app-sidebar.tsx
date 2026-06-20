@@ -20,7 +20,7 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { href: "/dashboard", label: "Inicio", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Início", icon: LayoutDashboard },
   { href: "/turmas", label: "Turmas", icon: BookOpen },
   { href: "/alunos", label: "Alunos", icon: Users },
   { href: "/encontros", label: "Encontros", icon: Calendar },
@@ -29,7 +29,7 @@ const navItems = [
 ];
 
 const adminItems = [
-  { href: "/admin", label: "Administracao", icon: Settings },
+  { href: "/admin", label: "Administração", icon: Settings },
 ];
 
 export function AppSidebar({ org, role, currentPath }: SidebarProps) {

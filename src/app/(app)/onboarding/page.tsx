@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { OnboardingFlow } from "@/components/onboarding/onboarding-flow";
 
 export const metadata: Metadata = {
-  title: "Configurar organizacao",
+  title: "Configurar organização",
 };
 
 export default function OnboardingPage() {
@@ -12,7 +12,7 @@ export default function OnboardingPage() {
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-white">Bem-vindo ao CBSTA</h1>
           <p className="text-sm mt-2" style={{ color: "#7DAF9C" }}>
-            Para comecar, crie ou entre em uma organizacao.
+            Para começar, crie ou entre em uma organização.
           </p>
         </div>
         <OnboardingFlow />

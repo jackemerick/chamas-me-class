@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { z } from "zod";
 
 const emailSchema = z.object({
-  email: z.string().email("E-mail invalido"),
+  email: z.string().email("E-mail inválido"),
 });
 
 // Envia magic link via Supabase Auth (configurado para usar Resend como SMTP)
@@ -28,7 +28,7 @@ export async function sendMagicLink(formData: FormData) {
 
   if (error) {
     console.error("Erro ao enviar magic link:", error.message);
-    return { error: "Nao foi possivel enviar o link. Tente novamente." };
+    return { error: "Não foi possível enviar o link. Tente novamente." };
   }
 
   return { success: true };

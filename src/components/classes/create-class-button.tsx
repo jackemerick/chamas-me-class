@@ -19,7 +19,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 
 const schema = z.object({
-  name: z.string().min(2, "Minimo 2 caracteres").max(80),
+  name: z.string().min(2, "Mínimo 2 caracteres").max(80),
   group_label: z.string().max(40).optional(),
 });
 
@@ -49,7 +49,7 @@ export function CreateClassButton({ orgId }: CreateClassButtonProps) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      toast.error("Sessao expirada. Faca login novamente.");
+      toast.error("Sessão expirada. Faça login novamente.");
       return;
     }
 
