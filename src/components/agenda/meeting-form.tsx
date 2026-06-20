@@ -4,12 +4,17 @@ import { useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Link as LinkIcon, Trash2, Music } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
+import Typography from "@mui/material/Typography";
+import CircularProgress from "@mui/material/CircularProgress";
+import Divider from "@mui/material/Divider";
+import InputAdornment from "@mui/material/InputAdornment";
+import LinkRoundedIcon from "@mui/icons-material/LinkRounded";
+import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import { criarEncontro, editarEncontro, excluirEncontro, buscarTituloMusica } from "@/actions/meetings";
 
 const schema = z.object({
@@ -44,16 +49,12 @@ export function MeetingForm({ classes, defaultValues, onCancel }: MeetingFormPro
 
   const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      recurrence: "none",
-      ...defaultValues,
-    },
+    defaultValues: { recurrence: "none", ...defaultValues },
   });
 
   const recurrence = watch("recurrence");
   const classId = watch("class_id");
 
-  // Carrega professores ao trocar de turma
   const loadTeachers = useCallback(async (cid: string) => {
     if (!cid) return;
     setLoadingTeachers(true);
@@ -61,14 +62,11 @@ export function MeetingForm({ classes, defaultValues, onCancel }: MeetingFormPro
       const res = await fetch(`/api/class-teachers?class_id=${cid}`);
       const data = await res.json();
       setTeachers(data.teachers ?? []);
-    } catch {
-      setTeachers([]);
-    } finally {
-      setLoadingTeachers(false);
-    }
+    } catch { setTeachers([]); }
+    finally { setLoadingTeachers(false); }
   }, []);
 
-  async function handleClassChange(e: React.ChangeEvent<HTMLSelectElement>) {
+  async function handleClassChange(e: React.ChangeEvent<HTMLInputElement>) {
     setValue("class_id", e.target.value);
     setValue("responsible_user_id", "");
     await loadTeachers(e.target.value);
@@ -88,7 +86,6 @@ export function MeetingForm({ classes, defaultValues, onCancel }: MeetingFormPro
     Object.entries(data).forEach(([k, v]) => { if (v) formData.set(k, v); });
     if (musicTitle) formData.set("music_title", musicTitle);
     if (isEdit && defaultValues?.id) formData.set("id", defaultValues.id);
-
     const action = isEdit ? editarEncontro : criarEncontro;
     const result = await action(formData);
     if (result?.error) toast.error(result.error);
@@ -104,150 +101,139 @@ export function MeetingForm({ classes, defaultValues, onCancel }: MeetingFormPro
     if (result?.error) { toast.error(result.error); setDeleting(false); }
   }
 
-  const selectClass = "flex h-10 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring";
-
   return (
-    <Card className="border-0 shadow-none">
-      <CardContent className="pt-0 px-0">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <TextField
+        label="Tema"
+        placeholder="Ex: A fé que move montanhas"
+        autoFocus
+        error={!!errors.theme}
+        helperText={errors.theme?.message}
+        {...register("theme")}
+      />
 
-          {/* Tema */}
-          <div className="space-y-2">
-            <Label htmlFor="theme">Tema</Label>
-            <Input id="theme" placeholder="Ex: A fé que move montanhas" autoFocus {...register("theme")} />
-            {errors.theme && <p className="text-sm text-destructive">{errors.theme.message}</p>}
-          </div>
+      <TextField
+        select
+        label="Turma"
+        defaultValue={defaultValues?.class_id ?? ""}
+        error={!!errors.class_id}
+        helperText={errors.class_id?.message}
+        {...register("class_id", { onChange: handleClassChange })}
+      >
+        <MenuItem value="">Selecione uma turma</MenuItem>
+        {classes.map((c) => (
+          <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>
+        ))}
+      </TextField>
 
-          {/* Turma */}
-          <div className="space-y-2">
-            <Label htmlFor="class_id">Turma</Label>
-            <select
-              id="class_id"
-              className={selectClass}
-              defaultValue={defaultValues?.class_id ?? ""}
-              {...register("class_id")}
-              onChange={handleClassChange}
-            >
-              <option value="">Selecione uma turma</option>
-              {classes.map((c) => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-            {errors.class_id && <p className="text-sm text-destructive">{errors.class_id.message}</p>}
-          </div>
+      <TextField
+        label="Data"
+        type="date"
+        slotProps={{ inputLabel: { shrink: true } }}
+        error={!!errors.date}
+        helperText={errors.date?.message}
+        {...register("date")}
+      />
 
-          {/* Data */}
-          <div className="space-y-2">
-            <Label htmlFor="date">Data</Label>
-            <Input id="date" type="date" {...register("date")} />
-            {errors.date && <p className="text-sm text-destructive">{errors.date.message}</p>}
-          </div>
+      <TextField
+        select
+        label="Recorrência"
+        defaultValue="none"
+        {...register("recurrence")}
+      >
+        <MenuItem value="none">Sem recorrência</MenuItem>
+        <MenuItem value="weekly">Semanal</MenuItem>
+        <MenuItem value="biweekly">Quinzenal</MenuItem>
+        <MenuItem value="monthly">Mensal</MenuItem>
+      </TextField>
 
-          {/* Recorrência */}
-          <div className="space-y-2">
-            <Label htmlFor="recurrence">Recorrência</Label>
-            <select id="recurrence" className={selectClass} {...register("recurrence")}>
-              <option value="none">Sem recorrência</option>
-              <option value="weekly">Semanal</option>
-              <option value="biweekly">Quinzenal</option>
-              <option value="monthly">Mensal</option>
-            </select>
-          </div>
+      {recurrence !== "none" && (
+        <TextField
+          label="Repetir até"
+          type="date"
+          slotProps={{ inputLabel: { shrink: true } }}
+          {...register("recurrence_end_date")}
+        />
+      )}
 
-          {recurrence !== "none" && (
-            <div className="space-y-2">
-              <Label htmlFor="recurrence_end_date">Repetir até</Label>
-              <Input id="recurrence_end_date" type="date" {...register("recurrence_end_date")} />
-            </div>
-          )}
+      {classId && (
+        <TextField
+          select
+          label="Responsável"
+          defaultValue=""
+          disabled={loadingTeachers}
+          {...register("responsible_user_id")}
+        >
+          <MenuItem value="">
+            {loadingTeachers ? "Carregando..." : "Nenhum"}
+          </MenuItem>
+          {teachers.map((t) => (
+            <MenuItem key={t.id} value={t.id}>{t.name || t.email}</MenuItem>
+          ))}
+        </TextField>
+      )}
 
-          {/* Responsável */}
-          {classId && (
-            <div className="space-y-2">
-              <Label htmlFor="responsible_user_id">Responsável</Label>
-              {loadingTeachers ? (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  Carregando professores...
-                </div>
-              ) : (
-                <select id="responsible_user_id" className={selectClass} {...register("responsible_user_id")}>
-                  <option value="">Nenhum</option>
-                  {teachers.map((t) => (
-                    <option key={t.id} value={t.id}>{t.name || t.email}</option>
-                  ))}
-                </select>
-              )}
-            </div>
-          )}
+      <TextField
+        label="Música"
+        placeholder="https://..."
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <LinkRoundedIcon fontSize="small" sx={{ color: "text.disabled" }} />
+              </InputAdornment>
+            ),
+          },
+        }}
+        {...register("music_url")}
+        onBlur={handleMusicBlur}
+        helperText={
+          fetchingMusic ? "Buscando título..." :
+          musicTitle ? musicTitle :
+          "Link do YouTube ou Spotify"
+        }
+      />
 
-          {/* Música */}
-          <div className="space-y-2">
-            <Label htmlFor="music_url">
-              <Music className="w-3.5 h-3.5 inline mr-1" />
-              Música <span className="text-muted-foreground font-normal">(link YouTube ou Spotify)</span>
-            </Label>
-            <div className="relative">
-              <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-              <Input
-                id="music_url"
-                placeholder="https://..."
-                className="pl-8"
-                {...register("music_url")}
-                onBlur={handleMusicBlur}
-              />
-            </div>
-            {fetchingMusic && <p className="text-xs text-muted-foreground">Buscando título...</p>}
-            {musicTitle && (
-              <p className="text-xs font-medium" style={{ color: "#334035" }}>
-                {musicTitle}
-              </p>
-            )}
-          </div>
+      <TextField
+        label="Notas"
+        multiline
+        rows={3}
+        placeholder="Observações, links, tópicos do encontro..."
+        {...register("notes")}
+      />
 
-          {/* Notas */}
-          <div className="space-y-2">
-            <Label htmlFor="notes">Notas</Label>
-            <textarea
-              id="notes"
-              rows={4}
-              placeholder="Observações, links, tópicos do encontro..."
-              className="flex w-full rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring resize-none"
-              {...register("notes")}
-            />
-          </div>
+      <Box sx={{ display: "flex", gap: 1.5 }}>
+        {onCancel && (
+          <Button variant="outlined" onClick={onCancel} disabled={isSubmitting} fullWidth>
+            Cancelar
+          </Button>
+        )}
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={isSubmitting}
+          fullWidth
+          startIcon={isSubmitting ? <CircularProgress size={16} color="inherit" /> : undefined}
+        >
+          {isSubmitting ? "Salvando..." : isEdit ? "Salvar" : recurrence !== "none" ? "Criar encontros" : "Criar encontro"}
+        </Button>
+      </Box>
 
-          <div className="flex gap-3 pt-2">
-            {onCancel && (
-              <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting} className="flex-1">
-                Cancelar
-              </Button>
-            )}
-            <Button type="submit" disabled={isSubmitting} className="flex-1" style={{ backgroundColor: "#334035" }}>
-              {isSubmitting
-                ? <Loader2 className="w-4 h-4 animate-spin" />
-                : isEdit ? "Salvar" : recurrence !== "none" ? "Criar encontros" : "Criar encontro"
-              }
-            </Button>
-          </div>
-
-          {isEdit && defaultValues?.id && (
-            <div className="pt-2 border-t">
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="text-destructive hover:text-destructive w-full"
-                onClick={handleDelete}
-                disabled={deleting || isSubmitting}
-              >
-                {deleting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Trash2 className="w-4 h-4 mr-2" />}
-                Excluir encontro
-              </Button>
-            </div>
-          )}
-        </form>
-      </CardContent>
-    </Card>
+      {isEdit && defaultValues?.id && (
+        <>
+          <Divider />
+          <Button
+            variant="text"
+            color="error"
+            startIcon={deleting ? <CircularProgress size={16} color="inherit" /> : <DeleteOutlineRoundedIcon />}
+            onClick={handleDelete}
+            disabled={deleting || isSubmitting}
+            fullWidth
+          >
+            Excluir encontro
+          </Button>
+        </>
+      )}
+    </Box>
   );
 }

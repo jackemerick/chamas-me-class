@@ -1,8 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import ButtonBase from "@mui/material/ButtonBase";
+import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
+import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 
 interface Meeting {
   id: string;
@@ -39,7 +43,6 @@ export function AgendaCalendar({ meetings, onDayClick }: CalendarProps) {
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  // Mapa de datas com encontros
   const meetingsByDate = meetings.reduce<Record<string, Meeting[]>>((acc, m) => {
     const d = m.date.split("T")[0];
     if (!acc[d]) acc[d] = [];
@@ -50,39 +53,35 @@ export function AgendaCalendar({ meetings, onDayClick }: CalendarProps) {
   const todayStr = today.toISOString().split("T")[0];
 
   return (
-    <div className="bg-white rounded-2xl border border-border overflow-hidden">
-      {/* Header do mês */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border" style={{ backgroundColor: "#334035" }}>
-        <button
-          onClick={prev}
-          className="w-8 h-8 flex items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
-        >
-          <ChevronLeft className="w-4 h-4" />
-        </button>
-        <span className="text-sm font-semibold text-white">
+    <Box sx={{ bgcolor: "background.paper", borderRadius: 3, border: "1px solid", borderColor: "divider", overflow: "hidden" }}>
+      {/* Header */}
+      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", px: 1.5, py: 1, bgcolor: "#334035" }}>
+        <IconButton onClick={prev} size="small" sx={{ color: "rgba(255,255,255,0.7)", "&:hover": { color: "white", bgcolor: "rgba(255,255,255,0.1)" } }}>
+          <ChevronLeftRoundedIcon fontSize="small" />
+        </IconButton>
+        <Typography variant="body2" sx={{ color: "white", fontWeight: 600 }}>
           {MONTHS[month]} {year}
-        </span>
-        <button
-          onClick={next}
-          className="w-8 h-8 flex items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"
-        >
-          <ChevronRight className="w-4 h-4" />
-        </button>
-      </div>
+        </Typography>
+        <IconButton onClick={next} size="small" sx={{ color: "rgba(255,255,255,0.7)", "&:hover": { color: "white", bgcolor: "rgba(255,255,255,0.1)" } }}>
+          <ChevronRightRoundedIcon fontSize="small" />
+        </IconButton>
+      </Box>
 
       {/* Dias da semana */}
-      <div className="grid grid-cols-7 border-b border-border">
+      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", borderBottom: "1px solid", borderColor: "divider" }}>
         {WEEKDAYS.map((d) => (
-          <div key={d} className="py-2 text-center text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">
-            {d}
-          </div>
+          <Box key={d} sx={{ py: 1, textAlign: "center" }}>
+            <Typography variant="caption" sx={{ fontWeight: 600, color: "text.secondary", fontSize: 10, textTransform: "uppercase" }}>
+              {d}
+            </Typography>
+          </Box>
         ))}
-      </div>
+      </Box>
 
       {/* Grid de dias */}
-      <div className="grid grid-cols-7">
+      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)" }}>
         {Array.from({ length: firstDay }).map((_, i) => (
-          <div key={`empty-${i}`} className="h-10 md:h-14" />
+          <Box key={`empty-${i}`} sx={{ height: 44 }} />
         ))}
         {Array.from({ length: daysInMonth }).map((_, i) => {
           const day = i + 1;
@@ -92,39 +91,56 @@ export function AgendaCalendar({ meetings, onDayClick }: CalendarProps) {
           const hasMeeting = dayMeetings.length > 0;
 
           return (
-            <button
+            <ButtonBase
               key={day}
-              onClick={() => hasMeeting && onDayClick?.(dateStr, dayMeetings)}
-              className={cn(
-                "h-10 md:h-14 flex flex-col items-center justify-start pt-1.5 gap-0.5 text-sm transition-colors relative",
-                hasMeeting ? "cursor-pointer hover:bg-muted/50" : "cursor-default",
-                isToday && "font-bold"
-              )}
+              disabled={!hasMeeting}
+              onClick={() => onDayClick?.(dateStr, dayMeetings)}
+              sx={{
+                height: 44,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                pt: 0.75,
+                gap: 0.25,
+                borderRadius: 1,
+                cursor: hasMeeting ? "pointer" : "default",
+                "&:hover": hasMeeting ? { bgcolor: "action.hover" } : {},
+              }}
             >
-              <span
-                className={cn(
-                  "w-6 h-6 flex items-center justify-center rounded-full text-xs",
-                  isToday && "text-white"
-                )}
-                style={isToday ? { backgroundColor: "#334035" } : undefined}
+              <Box
+                sx={{
+                  width: 26,
+                  height: 26,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "50%",
+                  bgcolor: isToday ? "#334035" : "transparent",
+                }}
               >
-                {day}
-              </span>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    fontWeight: isToday ? 700 : 400,
+                    color: isToday ? "white" : "text.primary",
+                    fontSize: 12,
+                  }}
+                >
+                  {day}
+                </Typography>
+              </Box>
               {hasMeeting && (
-                <div className="flex gap-0.5">
+                <Box sx={{ display: "flex", gap: 0.3 }}>
                   {dayMeetings.slice(0, 3).map((_, idx) => (
-                    <div
-                      key={idx}
-                      className="w-1 h-1 rounded-full"
-                      style={{ backgroundColor: "#F2542D" }}
-                    />
+                    <Box key={idx} sx={{ width: 4, height: 4, borderRadius: "50%", bgcolor: "#F2542D" }} />
                   ))}
-                </div>
+                </Box>
               )}
-            </button>
+            </ButtonBase>
           );
         })}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 }

@@ -37,6 +37,7 @@ export function AppTopbar({ user, orgName }: AppTopbarProps) {
       position="static"
       elevation={0}
       sx={{
+        display: { xs: "flex", md: "none" },
         bgcolor: "background.paper",
         borderBottom: "1px solid",
         borderColor: "divider",

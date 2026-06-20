@@ -1,11 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Shield, ShieldOff, UserX } from "lucide-react";
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import ListItemText from "@mui/material/ListItemText";
+import Avatar from "@mui/material/Avatar";
+import Chip from "@mui/material/Chip";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import CircularProgress from "@mui/material/CircularProgress";
+import Divider from "@mui/material/Divider";
+import Tooltip from "@mui/material/Tooltip";
+import Box from "@mui/material/Box";
+import AdminPanelSettingsRoundedIcon from "@mui/icons-material/AdminPanelSettingsRounded";
+import PersonOffRoundedIcon from "@mui/icons-material/PersonOffRounded";
+import ShieldRoundedIcon from "@mui/icons-material/ShieldRounded";
 import { alterarRole, removerMembro } from "@/actions/members";
 
 interface MemberItem {
@@ -28,7 +41,7 @@ export function MembersList({
 }) {
   const [loading, setLoading] = useState<string | null>(null);
 
-  async function handleRole(memberId: string, userId: string, currentRole: string) {
+  async function handleRole(memberId: string, currentRole: string) {
     setLoading(memberId);
     const formData = new FormData();
     formData.set("member_id", memberId);
@@ -53,58 +66,85 @@ export function MembersList({
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">Membros ({members.length})</CardTitle>
-      </CardHeader>
-      <CardContent className="p-0">
-        <ul className="divide-y">
-          {members.map((m) => {
-            const isMe = m.user_id === currentUserId;
-            const busy = loading === m.id;
-            return (
-              <li key={m.id} className="flex items-center gap-3 px-6 py-3">
-                <div className="w-8 h-8 rounded-full bg-brand-dark flex items-center justify-center shrink-0">
-                  <span className="text-white text-xs font-bold">
-                    {(m.name || m.email).charAt(0).toUpperCase()}
-                  </span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{m.name || "Sem nome"}</p>
-                  <p className="text-xs text-muted-foreground truncate">{m.email}</p>
-                </div>
-                <Badge variant={m.role === "admin" ? "default" : "secondary"} className="shrink-0">
-                  {m.role === "admin" ? "Admin" : "Membro"}
-                </Badge>
-                {!isMe && (
-                  <div className="flex gap-1 shrink-0">
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-7 w-7"
-                      disabled={busy}
-                      onClick={() => handleRole(m.id, m.user_id, m.role)}
-                      title={m.role === "admin" ? "Remover admin" : "Tornar admin"}
-                    >
-                      {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : m.role === "admin" ? <ShieldOff className="w-3.5 h-3.5" /> : <Shield className="w-3.5 h-3.5" />}
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-7 w-7 text-destructive hover:text-destructive"
-                      disabled={busy}
-                      onClick={() => handleRemove(m.id)}
-                      title="Remover da igreja"
-                    >
-                      <UserX className="w-3.5 h-3.5" />
-                    </Button>
-                  </div>
-                )}
-              </li>
-            );
-          })}
-        </ul>
+    <Card elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3 }}>
+      <CardContent sx={{ pb: "0 !important" }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
+          Membros ({members.length})
+        </Typography>
       </CardContent>
+      <List disablePadding>
+        {members.map((m, idx) => {
+          const isMe = m.user_id === currentUserId;
+          const busy = loading === m.id;
+          const initials = (m.name || m.email).charAt(0).toUpperCase();
+          const isAdmin = m.role === "admin" || m.role === "superadmin";
+
+          return (
+            <Box key={m.id}>
+              {idx > 0 && <Divider component="li" />}
+              <ListItem
+                sx={{ px: 2, py: 1.5 }}
+                secondaryAction={
+                  !isMe ? (
+                    <Box sx={{ display: "flex", gap: 0.5 }}>
+                      <Tooltip title={isAdmin ? "Remover admin" : "Tornar admin"}>
+                        <IconButton
+                          size="small"
+                          disabled={busy}
+                          onClick={() => handleRole(m.id, m.role)}
+                        >
+                          {busy
+                            ? <CircularProgress size={14} />
+                            : isAdmin
+                              ? <ShieldRoundedIcon sx={{ fontSize: 16, color: "primary.main" }} />
+                              : <AdminPanelSettingsRoundedIcon sx={{ fontSize: 16 }} />
+                          }
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Remover da igreja">
+                        <IconButton
+                          size="small"
+                          disabled={busy}
+                          onClick={() => handleRemove(m.id)}
+                          sx={{ color: "error.main" }}
+                        >
+                          <PersonOffRoundedIcon sx={{ fontSize: 16 }} />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+                  ) : undefined
+                }
+              >
+                <ListItemAvatar sx={{ minWidth: 44 }}>
+                  <Avatar sx={{ width: 32, height: 32, bgcolor: "primary.main", fontSize: 13, fontWeight: 700 }}>
+                    {initials}
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>
+                        {m.name || "Sem nome"}
+                      </Typography>
+                      <Chip
+                        label={isAdmin ? "Admin" : "Membro"}
+                        size="small"
+                        color={isAdmin ? "primary" : "default"}
+                        sx={{ height: 18, fontSize: 10, fontWeight: 600 }}
+                      />
+                    </Box>
+                  }
+                  secondary={
+                    <Typography variant="caption" color="text.secondary" noWrap>
+                      {m.email}
+                    </Typography>
+                  }
+                />
+              </ListItem>
+            </Box>
+          );
+        })}
+      </List>
     </Card>
   );
 }
