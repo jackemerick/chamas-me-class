@@ -1,52 +1,75 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { LayoutDashboard, BookOpen, CalendarDays, Trophy, Settings } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useRouter, usePathname } from "next/navigation";
+import BottomNavigation from "@mui/material/BottomNavigation";
+import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+import Paper from "@mui/material/Paper";
+import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
+import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
+import EmojiEventsRoundedIcon from "@mui/icons-material/EmojiEventsRounded";
+import AdminPanelSettingsRoundedIcon from "@mui/icons-material/AdminPanelSettingsRounded";
 
 interface BottomNavProps {
   isAdmin: boolean;
 }
 
+const routes = [
+  { value: "/dashboard", label: "Início", icon: <HomeRoundedIcon /> },
+  { value: "/turmas", label: "Turmas", icon: <MenuBookRoundedIcon /> },
+  { value: "/agenda", label: "Agenda", icon: <CalendarMonthRoundedIcon /> },
+  { value: "/pontos", label: "Pontos", icon: <EmojiEventsRoundedIcon /> },
+];
+
+const adminRoute = {
+  value: "/admin",
+  label: "Admin",
+  icon: <AdminPanelSettingsRoundedIcon />,
+};
+
 export function BottomNav({ isAdmin }: BottomNavProps) {
+  const router = useRouter();
   const pathname = usePathname();
 
-  const items = [
-    { href: "/dashboard", label: "Início", icon: LayoutDashboard },
-    { href: "/turmas", label: "Turmas", icon: BookOpen },
-    { href: "/agenda", label: "Agenda", icon: CalendarDays },
-    { href: "/pontos", label: "Pontos", icon: Trophy },
-    ...(isAdmin ? [{ href: "/admin", label: "Admin", icon: Settings }] : []),
-  ];
+  const items = isAdmin ? [...routes, adminRoute] : routes;
+
+  // Determina qual tab está ativa
+  const active = items.find(
+    (r) =>
+      pathname === r.value ||
+      (r.value !== "/dashboard" && pathname.startsWith(r.value))
+  )?.value ?? "/dashboard";
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-border z-50">
-      <ul className="flex items-stretch h-16">
-        {items.map((item) => {
-          const Icon = item.icon;
-          const active =
-            pathname === item.href ||
-            (item.href !== "/dashboard" && pathname.startsWith(item.href));
-          return (
-            <li key={item.href} className="flex-1">
-              <Link
-                href={item.href}
-                className={cn(
-                  "flex flex-col items-center justify-center h-full gap-1 text-[10px] font-medium transition-colors",
-                  active ? "text-brand-dark" : "text-muted-foreground"
-                )}
-              >
-                <Icon
-                  className={cn("w-5 h-5", active && "stroke-[2.5]")}
-                  style={active ? { color: "#334035" } : undefined}
-                />
-                {item.label}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
+    <Paper
+      sx={{
+        display: { xs: "block", md: "none" },
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1300,
+      }}
+      elevation={8}
+    >
+      <BottomNavigation
+        value={active}
+        onChange={(_, val) => router.push(val)}
+        showLabels
+      >
+        {items.map((item) => (
+          <BottomNavigationAction
+            key={item.value}
+            value={item.value}
+            label={item.label}
+            icon={item.icon}
+            sx={{
+              color: "text.secondary",
+              "&.Mui-selected": { color: "primary.main" },
+            }}
+          />
+        ))}
+      </BottomNavigation>
+    </Paper>
   );
 }

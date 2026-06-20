@@ -2,25 +2,27 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  LayoutDashboard,
-  Users,
-  BookOpen,
-  Calendar,
-  Trophy,
-  Award,
-  Settings,
-  ChevronDown,
-  Check,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import Drawer from "@mui/material/Drawer";
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Divider from "@mui/material/Divider";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Avatar from "@mui/material/Avatar";
+import MenuItem from "@mui/material/MenuItem";
+import Menu from "@mui/material/Menu";
+import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
+import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
+import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
+import EmojiEventsRoundedIcon from "@mui/icons-material/EmojiEventsRounded";
+import AdminPanelSettingsRoundedIcon from "@mui/icons-material/AdminPanelSettingsRounded";
+import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
+import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
+import { useState } from "react";
+
+const SIDEBAR_WIDTH = 240;
 
 interface OrgBasic {
   id: string;
@@ -38,139 +40,148 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { href: "/dashboard", label: "Início", icon: LayoutDashboard },
-  { href: "/turmas", label: "Turmas", icon: BookOpen },
-  { href: "/alunos", label: "Alunos", icon: Users },
-  { href: "/encontros", label: "Encontros", icon: Calendar },
-  { href: "/pontos", label: "Pontos", icon: Trophy },
-  { href: "/certificados", label: "Certificados", icon: Award },
-];
-
-const adminItems = [
-  { href: "/admin", label: "Administração", icon: Settings },
+  { href: "/dashboard", label: "Início", icon: <HomeRoundedIcon /> },
+  { href: "/turmas", label: "Turmas", icon: <MenuBookRoundedIcon /> },
+  { href: "/agenda", label: "Agenda", icon: <CalendarMonthRoundedIcon /> },
+  { href: "/pontos", label: "Pontos", icon: <EmojiEventsRoundedIcon /> },
 ];
 
 export function AppSidebar({ org, role, currentPath, allOrgs, activeOrgId }: SidebarProps) {
   const router = useRouter();
-  const primaryColor = org?.primary_color ?? "#334035";
+  const [orgMenuAnchor, setOrgMenuAnchor] = useState<null | HTMLElement>(null);
   const isAdmin = role === "admin" || role === "superadmin";
-  const hasMultipleOrgs = allOrgs.length > 1;
+  const primaryColor = org?.primary_color ?? "#334035";
 
-  async function trocarOrg(orgId: string) {
+  async function switchOrg(orgId: string) {
+    setOrgMenuAnchor(null);
     await fetch("/api/switch-org", { method: "POST", body: JSON.stringify({ orgId }) });
     router.refresh();
   }
 
-  return (
-    <aside
-      className="hidden md:flex flex-col w-60 shrink-0 h-full"
-      style={{ backgroundColor: primaryColor }}
-    >
-      {/* Header da sidebar — nome da org, com seletor se tiver mais de uma */}
-      <div className="px-4 py-5 border-b border-white/10">
-        {hasMultipleOrgs ? (
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-3 w-full text-left group outline-none">
-                <OrgAvatar org={org} />
-                <div className="flex-1 min-w-0">
-                  <p className="text-white text-sm font-semibold truncate">{org?.name ?? "Igreja"}</p>
-                  <p className="text-white/50 text-xs capitalize">{role}</p>
-                </div>
-                <ChevronDown className="w-4 h-4 text-white/40 shrink-0 group-hover:text-white/70 transition-colors" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-52">
-              {allOrgs.map((o) => (
-                <DropdownMenuItem
-                  key={o.id}
-                  onClick={() => trocarOrg(o.id)}
-                  className="flex items-center gap-2"
-                >
-                  <span className="flex-1 truncate">{o.name}</span>
-                  {o.id === activeOrgId && <Check className="w-4 h-4 shrink-0" />}
-                </DropdownMenuItem>
-              ))}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => window.location.href = "/onboarding"}>
-                Entrar em outra Igreja
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        ) : (
-          <div className="flex items-center gap-3">
-            <OrgAvatar org={org} />
-            <div className="flex-1 min-w-0">
-              <p className="text-white text-sm font-semibold truncate">{org?.name ?? "Chamas-me Class"}</p>
-              <p className="text-white/50 text-xs capitalize">{role}</p>
-            </div>
-          </div>
-        )}
-      </div>
+  function isActive(href: string) {
+    return currentPath === href || (href !== "/dashboard" && currentPath.startsWith(href));
+  }
 
-      {/* Navegacao */}
-      <nav className="flex-1 px-3 py-4 overflow-y-auto">
-        <ul className="space-y-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active =
-              currentPath === item.href ||
-              (item.href !== "/dashboard" && currentPath.startsWith(item.href));
-            return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                    active ? "bg-white/15 text-white" : "text-white/70 hover:bg-white/10 hover:text-white"
-                  )}
-                >
-                  <Icon className="w-4 h-4 shrink-0" />
-                  {item.label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+  return (
+    <Drawer
+      variant="permanent"
+      sx={{
+        display: { xs: "none", md: "flex" },
+        width: SIDEBAR_WIDTH,
+        flexShrink: 0,
+        "& .MuiDrawer-paper": {
+          width: SIDEBAR_WIDTH,
+          bgcolor: primaryColor,
+          color: "white",
+          border: "none",
+          boxSizing: "border-box",
+        },
+      }}
+    >
+      {/* Header da org */}
+      <Box
+        onClick={(e) => allOrgs.length > 1 && setOrgMenuAnchor(e.currentTarget)}
+        sx={{
+          px: 2,
+          py: 2,
+          display: "flex",
+          alignItems: "center",
+          gap: 1.5,
+          cursor: allOrgs.length > 1 ? "pointer" : "default",
+          borderBottom: "1px solid rgba(255,255,255,0.1)",
+          "&:hover": allOrgs.length > 1 ? { bgcolor: "rgba(255,255,255,0.08)" } : {},
+        }}
+      >
+        <Avatar
+          src={org?.logo_url ?? undefined}
+          sx={{ width: 32, height: 32, bgcolor: "#F2542D", fontSize: 13, fontWeight: 700 }}
+        >
+          {org?.name?.charAt(0) ?? "C"}
+        </Avatar>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Typography variant="body2" sx={{ fontWeight: 700, color: "white" }} noWrap>
+            {org?.name ?? "Chamas-me Class"}
+          </Typography>
+          <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.5)", textTransform: "capitalize" }}>
+            {role}
+          </Typography>
+        </Box>
+        {allOrgs.length > 1 && (
+          <ExpandMoreRoundedIcon sx={{ color: "rgba(255,255,255,0.5)", fontSize: 18 }} />
+        )}
+      </Box>
+
+      {/* Menu de troca de org */}
+      <Menu
+        anchorEl={orgMenuAnchor}
+        open={Boolean(orgMenuAnchor)}
+        onClose={() => setOrgMenuAnchor(null)}
+        slotProps={{ paper: { sx: { mt: 1, minWidth: 200 } } }}
+      >
+        {allOrgs.map((o) => (
+          <MenuItem key={o.id} onClick={() => switchOrg(o.id)}>
+            <ListItemText primary={o.name} />
+            {o.id === activeOrgId && <CheckRoundedIcon fontSize="small" color="primary" />}
+          </MenuItem>
+        ))}
+        <Divider />
+        <MenuItem onClick={() => { setOrgMenuAnchor(null); window.location.href = "/onboarding"; }}>
+          Entrar em outra Igreja
+        </MenuItem>
+      </Menu>
+
+      {/* Navegação */}
+      <List sx={{ px: 1, py: 1.5, flex: 1 }}>
+        {navItems.map((item) => {
+          const active = isActive(item.href);
+          return (
+            <ListItemButton
+              key={item.href}
+              component={Link}
+              href={item.href}
+              selected={active}
+              sx={{
+                borderRadius: 2,
+                mb: 0.5,
+                color: active ? "white" : "rgba(255,255,255,0.65)",
+                bgcolor: active ? "rgba(255,255,255,0.15) !important" : "transparent",
+                "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
+              }}
+            >
+              <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText primary={item.label} slotProps={{ primary: { style: { fontSize: 14, fontWeight: active ? 600 : 400 } } }} />
+            </ListItemButton>
+          );
+        })}
 
         {isAdmin && (
-          <div className="mt-6">
-            <p className="px-3 mb-2 text-xs font-semibold text-white/40 uppercase tracking-wider">Admin</p>
-            <ul className="space-y-1">
-              {adminItems.map((item) => {
-                const Icon = item.icon;
-                const active = currentPath.startsWith(item.href);
-                return (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      className={cn(
-                        "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                        active ? "bg-white/15 text-white" : "text-white/70 hover:bg-white/10 hover:text-white"
-                      )}
-                    >
-                      <Icon className="w-4 h-4 shrink-0" />
-                      {item.label}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+          <>
+            <Divider sx={{ my: 1, borderColor: "rgba(255,255,255,0.1)" }} />
+            <Typography variant="caption" sx={{ px: 1.5, color: "rgba(255,255,255,0.35)", fontWeight: 600, textTransform: "uppercase", letterSpacing: 1 }}>
+              Admin
+            </Typography>
+            <ListItemButton
+              component={Link}
+              href="/admin"
+              selected={isActive("/admin")}
+              sx={{
+                borderRadius: 2,
+                mt: 0.5,
+                color: isActive("/admin") ? "white" : "rgba(255,255,255,0.65)",
+                bgcolor: isActive("/admin") ? "rgba(255,255,255,0.15) !important" : "transparent",
+                "&:hover": { bgcolor: "rgba(255,255,255,0.1)" },
+              }}
+            >
+              <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
+                <AdminPanelSettingsRoundedIcon />
+              </ListItemIcon>
+              <ListItemText primary="Administração" slotProps={{ primary: { style: { fontSize: 14 } } }} />
+            </ListItemButton>
+          </>
         )}
-      </nav>
-    </aside>
-  );
-}
-
-function OrgAvatar({ org }: { org: OrgBasic | null }) {
-  if (org?.logo_url) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img src={org.logo_url} alt={org.name} className="w-8 h-8 rounded-lg object-cover shrink-0" />
-    );
-  }
-  return (
-    <div className="w-8 h-8 rounded-lg bg-brand-accent flex items-center justify-center shrink-0">
-      <span className="text-white text-xs font-bold">{org?.name?.charAt(0) ?? "C"}</span>
-    </div>
+      </List>
+    </Drawer>
   );
 }

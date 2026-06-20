@@ -1,16 +1,19 @@
 "use client";
 
 import type { User } from "@supabase/supabase-js";
-import { LogOut, User as UserIcon } from "lucide-react";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import Avatar from "@mui/material/Avatar";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Divider from "@mui/material/Divider";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
+import PersonRoundedIcon from "@mui/icons-material/PersonRounded";
+import { useState } from "react";
 import { toast } from "sonner";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { signOut } from "@/actions/auth";
 
 interface AppTopbarProps {
@@ -19,59 +22,80 @@ interface AppTopbarProps {
 }
 
 export function AppTopbar({ user, orgName }: AppTopbarProps) {
+  const [anchor, setAnchor] = useState<null | HTMLElement>(null);
   const email = user.email ?? "";
   const initials = email.slice(0, 2).toUpperCase();
 
   async function handleSignOut() {
     await signOut();
     toast.success("Você saiu da conta.");
-    // Middleware vai redirecionar para /login automaticamente
     window.location.href = "/login";
   }
 
   return (
-    <header className="h-14 bg-white border-b border-border flex items-center justify-between px-4 md:px-6 shrink-0">
-      {/* Nome da org no mobile */}
-      <span className="text-sm font-semibold md:hidden truncate max-w-50">
-        {orgName}
-      </span>
-      {/* Espaço vazio no desktop (sidebar já mostra o nome) */}
-      <div className="hidden md:block" />
+    <AppBar
+      position="static"
+      elevation={0}
+      sx={{
+        bgcolor: "background.paper",
+        borderBottom: "1px solid",
+        borderColor: "divider",
+        color: "text.primary",
+      }}
+    >
+      <Toolbar sx={{ minHeight: { xs: 56, md: 64 } }}>
+        {/* Nome da org — só mobile (desktop tem sidebar) */}
+        <Typography
+          variant="subtitle1"
+          sx={{ flexGrow: 1, display: { xs: "block", md: "none" }, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+        >
+          {orgName}
+        </Typography>
+        <div style={{ flexGrow: 1 }} className="hidden md:block" />
 
-      {/* Menu do usuario */}
-      <DropdownMenu>
-        <DropdownMenuTrigger className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-full">
-          <Avatar className="w-8 h-8">
-            <AvatarFallback
-              className="text-xs font-semibold text-white"
-              style={{ backgroundColor: "#334035" }}
-            >
-              {initials}
-            </AvatarFallback>
+        <IconButton onClick={(e) => setAnchor(e.currentTarget)} size="small">
+          <Avatar
+            sx={{
+              width: 36,
+              height: 36,
+              bgcolor: "primary.main",
+              fontSize: 13,
+              fontWeight: 700,
+            }}
+          >
+            {initials}
           </Avatar>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
-          <div className="px-3 py-2">
-            <p className="text-xs text-muted-foreground truncate">{email}</p>
-          </div>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => { window.location.href = "/perfil"; }}
+        </IconButton>
+
+        <Menu
+          anchorEl={anchor}
+          open={Boolean(anchor)}
+          onClose={() => setAnchor(null)}
+          transformOrigin={{ horizontal: "right", vertical: "top" }}
+          anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+          slotProps={{ paper: { sx: { mt: 1, minWidth: 200 } } }}
+        >
+          <MenuItem disabled sx={{ opacity: "1 !important" }}>
+            <Typography variant="caption" color="text.secondary" noWrap>
+              {email}
+            </Typography>
+          </MenuItem>
+          <Divider />
+          <MenuItem
+            onClick={() => { setAnchor(null); window.location.href = "/perfil"; }}
           >
-            <UserIcon className="w-4 h-4 mr-2" />
+            <ListItemIcon><PersonRoundedIcon fontSize="small" /></ListItemIcon>
             Meu perfil
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={handleSignOut}
-            className="text-destructive focus:text-destructive cursor-pointer"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
+          </MenuItem>
+          <Divider />
+          <MenuItem onClick={handleSignOut} sx={{ color: "error.main" }}>
+            <ListItemIcon>
+              <LogoutRoundedIcon fontSize="small" color="error" />
+            </ListItemIcon>
             Sair
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </header>
+          </MenuItem>
+        </Menu>
+      </Toolbar>
+    </AppBar>
   );
 }

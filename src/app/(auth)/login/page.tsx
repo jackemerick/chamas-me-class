@@ -1,36 +1,54 @@
 import { LoginForm } from "@/components/auth/login-form";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Entrar",
-};
+export const metadata: Metadata = { title: "Entrar" };
 
-// Recupera mensagem de erro da URL se houver
 export default function LoginPage({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string }>;
 }) {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-brand-dark px-4">
-      <div className="w-full max-w-md">
-        {/* Logo e titulo */}
-        <div className="text-center mb-8">
-          <div
-            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
-            style={{ backgroundColor: "#F2542D" }}
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        bgcolor: "#334035",
+        px: 2,
+        py: 4,
+      }}
+    >
+      <Box sx={{ width: "100%", maxWidth: 400 }}>
+        {/* Logo */}
+        <Box sx={{ textAlign: "center", mb: 4 }}>
+          <Box
+            sx={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 64,
+              height: 64,
+              borderRadius: 3,
+              bgcolor: "#F2542D",
+              mb: 2,
+            }}
           >
-            {/* Placeholder para logo CBSTA */}
-            <span className="text-white font-bold text-xl">C</span>
-          </div>
-          <h1 className="text-2xl font-bold text-white">Chamas-me Class</h1>
-          <p className="text-sm mt-1" style={{ color: "#7DAF9C" }}>
+            <Typography sx={{ color: "white", fontWeight: 800, fontSize: 24 }}>C</Typography>
+          </Box>
+          <Typography variant="h5" sx={{ fontWeight: 800, color: "white", display: "block" }}>
+            Chamas-me Class
+          </Typography>
+          <Typography variant="body2" sx={{ color: "#7DAF9C", mt: 0.5 }}>
             Gestão de classes bíblicas
-          </p>
-        </div>
+          </Typography>
+        </Box>
 
         <LoginForm searchParams={searchParams} />
-      </div>
-    </main>
+      </Box>
+    </Box>
   );
 }

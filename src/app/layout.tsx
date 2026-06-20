@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Ubuntu } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import { MuiProvider } from "@/components/providers/mui-provider";
 import "./globals.css";
 
 const ubuntu = Ubuntu({
@@ -36,8 +37,10 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${ubuntu.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
-        {children}
-        <Toaster richColors position="top-right" />
+        <MuiProvider>
+          {children}
+          <Toaster richColors position="top-right" />
+        </MuiProvider>
       </body>
     </html>
   );

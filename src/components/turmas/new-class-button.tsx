@@ -1,8 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { ClassForm } from "./class-form";
 
 export function NewClassButton() {
@@ -10,21 +14,24 @@ export function NewClassButton() {
 
   if (open) {
     return (
-      <div className="w-full max-w-md">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold">Nova turma</h3>
-          <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>
-            <X className="w-4 h-4" />
-          </Button>
-        </div>
+      <Box sx={{ width: "100%", maxWidth: 420 }}>
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+          <Typography sx={{ fontWeight: 700 }}>Nova turma</Typography>
+          <IconButton size="small" onClick={() => setOpen(false)}>
+            <CloseRoundedIcon fontSize="small" />
+          </IconButton>
+        </Box>
         <ClassForm mode="create" onCancel={() => setOpen(false)} />
-      </div>
+      </Box>
     );
   }
 
   return (
-    <Button onClick={() => setOpen(true)} style={{ backgroundColor: "#334035" }} className="gap-2">
-      <Plus className="w-4 h-4" />
+    <Button
+      variant="contained"
+      startIcon={<AddRoundedIcon />}
+      onClick={() => setOpen(true)}
+    >
       Nova turma
     </Button>
   );

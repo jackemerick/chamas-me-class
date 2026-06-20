@@ -1,7 +1,12 @@
 import Link from "next/link";
-import { Users, ChevronRight } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import Card from "@mui/material/Card";
+import CardActionArea from "@mui/material/CardActionArea";
+import CardContent from "@mui/material/CardContent";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Chip from "@mui/material/Chip";
+import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
+import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 
 interface ClassCardProps {
   id: string;
@@ -12,34 +17,26 @@ interface ClassCardProps {
 
 export function ClassCard({ id, name, groupLabel, studentCount }: ClassCardProps) {
   return (
-    <Link href={`/turmas/${id}`}>
-      <Card className="hover:shadow-md transition-shadow cursor-pointer group border border-border">
-        <CardContent className="p-5">
-          <div className="flex items-start justify-between mb-3">
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-foreground truncate group-hover:text-primary transition-colors">
-                {name}
-              </h3>
+    <Card elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3 }}>
+      <CardActionArea component={Link} href={`/turmas/${id}`} sx={{ borderRadius: 3 }}>
+        <CardContent sx={{ p: 2.5 }}>
+          <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", mb: 1.5 }}>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography sx={{ fontWeight: 700 }} noWrap>{name}</Typography>
               {groupLabel && (
-                <Badge
-                  variant="secondary"
-                  className="mt-1.5 text-xs"
-                >
-                  {groupLabel}
-                </Badge>
+                <Chip label={groupLabel} size="small" sx={{ mt: 0.75, height: 22, fontSize: 11 }} />
               )}
-            </div>
-            <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5 group-hover:translate-x-0.5 transition-transform" />
-          </div>
-
-          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Users className="w-3.5 h-3.5" />
-            <span>
+            </Box>
+            <ChevronRightRoundedIcon sx={{ color: "text.disabled", fontSize: 20, mt: 0.25, flexShrink: 0 }} />
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+            <PeopleRoundedIcon sx={{ fontSize: 15, color: "text.disabled" }} />
+            <Typography variant="caption" color="text.secondary">
               {studentCount} {studentCount === 1 ? "aluno" : "alunos"}
-            </span>
-          </div>
+            </Typography>
+          </Box>
         </CardContent>
-      </Card>
-    </Link>
+      </CardActionArea>
+    </Card>
   );
 }
