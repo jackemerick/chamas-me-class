@@ -55,11 +55,33 @@ export type Database = {
         };
         Relationships: [];
       };
+      profiles: {
+        Row: {
+          id: string;
+          full_name: string | null;
+          avatar_url: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id: string;
+          full_name?: string | null;
+          avatar_url?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          full_name?: string | null;
+          avatar_url?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
       invites: {
         Row: {
           id: string;
           org_id: string;
           code: string;
+          email: string | null;
+          token: string | null;
           created_by: string | null;
           used_by: string | null;
           used_at: string | null;
@@ -69,7 +91,9 @@ export type Database = {
         Insert: {
           id?: string;
           org_id: string;
-          code: string;
+          code?: string;
+          email?: string | null;
+          token?: string | null;
           created_by?: string | null;
           used_by?: string | null;
           used_at?: string | null;
