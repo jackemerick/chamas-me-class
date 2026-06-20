@@ -23,7 +23,7 @@ export default function LoginPage({
             {/* Placeholder para logo CBSTA */}
             <span className="text-white font-bold text-xl">C</span>
           </div>
-          <h1 className="text-2xl font-bold text-white">CBSTA App</h1>
+          <h1 className="text-2xl font-bold text-white">Chamas-me Class</h1>
           <p className="text-sm mt-1" style={{ color: "#7DAF9C" }}>
             Gestao de classes biblicas
           </p>

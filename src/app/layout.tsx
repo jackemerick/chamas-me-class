@@ -15,13 +15,13 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_APP_URL ?? "https://class.chamas.me"
   ),
   title: {
-    default: "CBSTA App",
-    template: "%s | CBSTA App",
+    default: "Chamas-me Class",
+    template: "%s | Chamas-me Class",
   },
   description:
-    "Gestao de classes biblicas CBSTA. Turmas, alunos, presenca, pontos e certificados.",
+    "Gestao de classes biblicas Chamas-me. Turmas, alunos, presenca, pontos e certificados.",
   openGraph: {
-    title: "CBSTA App",
+    title: "Chamas-me Class",
     description: "Gestao de classes biblicas para professores e organizadores.",
     locale: "pt_BR",
     type: "website",

@@ -1,17 +1,17 @@
-# CBSTA App — Contexto do Projeto
+# Chamas-me Class — Contexto do Projeto
 
 ## Identificacao
-- **Nome:** CBSTA App
+- **Nome:** Chamas-me Class
 - **Cliente:** Chamas-me
-- **Pasta:** `~/jacklab/clientes/chamas-me/sites/cbsta-app/`
+- **Pasta:** `~/jacklab/clientes/chamas-me/sites/chamas-me-class/`
 - **Dominio futuro:** class.chamas.me (configurar apos MVP — rodar local por enquanto)
-- **Repo GitHub:** https://github.com/jackemerick/cbsta-app (publico)
+- **Repo GitHub:** https://github.com/jackemerick/chamas-me-class (publico)
 - **Stack:** Next.js 15 (App Router) + TypeScript + Tailwind + shadcn/ui + Supabase + Resend + @react-pdf/renderer + Zustand + Zod + React Hook Form
 - **Deploy futuro:** Vercel
 
 ---
 
-## O que e o CBSTA App
+## O que e o Chamas-me Class
 
 Sistema web de gestao de classes biblicas (CBSTA - Classe Biblica Seguindo a Trilha do Alto).
 Publico: professores e organizadores de classes infantis e adolescentes.
@@ -113,7 +113,7 @@ certificates         -> id, student_id, class_id, course_id (nullable), issued_b
 - Imports absolutos (`@/components/...`)
 - Nomes em ingles no codigo, comentarios em portugues
 - Commits: Conventional Commits PT-BR ("feat: adiciona...")
-- Autoria: "Jack Emerick - jack@jackemerick.com.br"
+- Autoria: "Jack Emerick 🥷 - jack@jackemerick.com.br"
 - Sem travessao (--) em nenhum texto do app
 
 ---
