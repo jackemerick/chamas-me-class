@@ -39,19 +39,26 @@ export function AppShell({ user, membership, allOrgs, children }: AppShellProps)
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <AppSidebar
-        org={org}
-        role={membership.role}
-        currentPath={pathname}
-        allOrgs={allOrgs}
-        activeOrgId={membership.org_id}
-      />
-      <div className="flex flex-col flex-1 overflow-hidden">
+      {/* Sidebar só aparece em desktop */}
+      <div className="hidden md:block">
+        <AppSidebar
+          org={org}
+          role={membership.role}
+          currentPath={pathname}
+          allOrgs={allOrgs}
+          activeOrgId={membership.org_id}
+        />
+      </div>
+
+      {/* Área principal */}
+      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         <AppTopbar user={user} orgName={org?.name ?? ""} />
-        <main className="flex-1 overflow-y-auto bg-brand-light p-4 md:p-6 pb-20 md:pb-6">
+        <main className="flex-1 overflow-y-auto bg-brand-light p-4 md:p-6 pb-24 md:pb-6">
           {children}
         </main>
       </div>
+
+      {/* Bottom nav só no mobile — fixed, fora do fluxo */}
       <BottomNav isAdmin={isAdmin} />
     </div>
   );

@@ -31,12 +31,11 @@ export function AppTopbar({ user, orgName }: AppTopbarProps) {
 
   return (
     <header className="h-14 bg-white border-b border-border flex items-center justify-between px-4 md:px-6 shrink-0">
-      {/* Nome da org (visivel em mobile) */}
-      <span className="text-sm font-medium text-muted-foreground md:hidden">
+      {/* Nome da org no mobile */}
+      <span className="text-sm font-semibold md:hidden truncate max-w-50">
         {orgName}
       </span>
-
-      {/* Espaco em branco em desktop (sidebar ja mostra org) */}
+      {/* Espaço vazio no desktop (sidebar já mostra o nome) */}
       <div className="hidden md:block" />
 
       {/* Menu do usuario */}
