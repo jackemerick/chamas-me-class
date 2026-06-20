@@ -3,12 +3,17 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Mail, Send } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Avatar from "@mui/material/Avatar";
+import CircularProgress from "@mui/material/CircularProgress";
+import SendRoundedIcon from "@mui/icons-material/SendRounded";
+import MailRoundedIcon from "@mui/icons-material/MailRounded";
 import { enviarConvite } from "@/actions/invite";
 
 const schema = z.object({ email: z.string().email("E-mail inválido") });
@@ -23,44 +28,46 @@ export function InviteForm() {
     const formData = new FormData();
     formData.set("email", data.email);
     const result = await enviarConvite(formData);
-    if (result?.error) {
-      toast.error(result.error);
-    } else {
-      toast.success(`Convite enviado para ${data.email}`);
-      reset();
-    }
+    if (result?.error) toast.error(result.error);
+    else { toast.success(`Convite enviado para ${data.email}`); reset(); }
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: "#7DAF9C20" }}>
-            <Mail className="w-4 h-4" style={{ color: "#7DAF9C" }} />
-          </div>
-          <div>
-            <CardTitle className="text-base">Convidar professor</CardTitle>
-            <CardDescription>A pessoa receberá um e-mail com link de acesso direto.</CardDescription>
-          </div>
-        </div>
-      </CardHeader>
+    <Card elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3 }}>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex gap-3">
-          <div className="flex-1 space-y-1">
-            <Label htmlFor="invite-email" className="sr-only">E-mail</Label>
-            <Input
-              id="invite-email"
-              type="email"
-              placeholder="professor@email.com"
-              autoComplete="off"
-              {...register("email")}
-            />
-            {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
-          </div>
-          <Button type="submit" disabled={isSubmitting} style={{ backgroundColor: "#334035" }}>
-            {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Send className="w-4 h-4 mr-1.5" />Enviar</>}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
+          <Avatar sx={{ width: 36, height: 36, bgcolor: "#7DAF9C20" }}>
+            <MailRoundedIcon sx={{ fontSize: 18, color: "#7DAF9C" }} />
+          </Avatar>
+          <Box>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Convidar professor</Typography>
+            <Typography variant="caption" color="text.secondary">
+              A pessoa receberá um e-mail com link de acesso direto.
+            </Typography>
+          </Box>
+        </Box>
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ display: "flex", gap: 1.5, alignItems: "flex-start" }}>
+          <TextField
+            type="email"
+            placeholder="professor@email.com"
+            size="small"
+            autoComplete="off"
+            error={!!errors.email}
+            helperText={errors.email?.message}
+            sx={{ flex: 1 }}
+            {...register("email")}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            size="small"
+            disabled={isSubmitting}
+            startIcon={isSubmitting ? <CircularProgress size={14} color="inherit" /> : <SendRoundedIcon />}
+            sx={{ whiteSpace: "nowrap", mt: 0.125 }}
+          >
+            {isSubmitting ? "Enviando..." : "Enviar"}
           </Button>
-        </form>
+        </Box>
       </CardContent>
     </Card>
   );

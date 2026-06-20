@@ -1,7 +1,7 @@
 // Tipos gerados manualmente baseados no schema SQL
 // Apos configurar o Supabase, rodar: npx supabase gen types typescript --local > src/types/database.ts
 
-export type OrgRole = "member" | "admin";
+export type OrgRole = "member" | "admin" | "superadmin";
 export type AttendanceStatus = "present" | "absent" | "justified";
 
 export type Database = {
@@ -459,6 +459,45 @@ export type Database = {
           issued_by?: string | null;
           issued_at?: string;
           pdf_url?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      class_plans: {
+        Row: {
+          id: string;
+          class_id: string;
+          title: string;
+          description: string | null;
+          order_index: number;
+          completed: boolean;
+          completed_at: string | null;
+          notes: string | null;
+          created_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          class_id: string;
+          title: string;
+          description?: string | null;
+          order_index?: number;
+          completed?: boolean;
+          completed_at?: string | null;
+          notes?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          class_id?: string;
+          title?: string;
+          description?: string | null;
+          order_index?: number;
+          completed?: boolean;
+          completed_at?: string | null;
+          notes?: string | null;
+          created_by?: string | null;
           created_at?: string;
         };
         Relationships: [];

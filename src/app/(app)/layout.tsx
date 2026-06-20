@@ -11,7 +11,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const admin = createAdminClient();
 
-  // Busca todas as memberships do usuario
   const { data: memberships } = await admin
     .from("org_members")
     .select("org_id, role")
@@ -21,17 +20,15 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     redirect("/onboarding");
   }
 
-  // Qual org está ativa? Lê do cookie ou usa a primeira
   const cookieStore = await cookies();
   const activeOrgId = cookieStore.get("active_org")?.value ?? memberships[0].org_id;
   const activeMember = memberships.find(m => m.org_id === activeOrgId) ?? memberships[0];
 
-  // Busca dados das orgs
   const orgIds = memberships.map(m => m.org_id);
-  const { data: orgs } = await admin
-    .from("organizations")
-    .select("id, name, slug, logo_url, primary_color")
-    .in("id", orgIds);
+  const [{ data: orgs }, { data: profile }] = await Promise.all([
+    admin.from("organizations").select("id, name, slug, logo_url, primary_color").in("id", orgIds),
+    admin.from("profiles").select("full_name, avatar_url").eq("id", user.id).single(),
+  ]);
 
   const activeOrg = orgs?.find(o => o.id === activeMember.org_id) ?? null;
 
@@ -42,7 +39,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   if (!membership) redirect("/onboarding");
 
   return (
-    <AppShell user={user} membership={membership} allOrgs={orgs ?? []}>
+    <AppShell
+      user={user}
+      membership={membership}
+      allOrgs={orgs ?? []}
+      avatarUrl={profile?.avatar_url ?? null}
+      displayName={profile?.full_name ?? ""}
+    >
       {children}
     </AppShell>
   );

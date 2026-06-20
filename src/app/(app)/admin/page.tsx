@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { cookies } from "next/headers";
@@ -26,30 +28,29 @@ export default async function AdminPage() {
 
   if (!myMember || myMember.role !== "admin") redirect("/dashboard");
 
-  // Busca membros da org
-  const { data: members } = await admin
-    .from("org_members")
-    .select("id, role, user_id, created_at")
-    .eq("org_id", myMember.org_id)
-    .order("created_at");
+  const [
+    { data: members },
+    { data: classes },
+    { data: classTeachers },
+  ] = await Promise.all([
+    admin.from("org_members").select("id, role, user_id, created_at").eq("org_id", myMember.org_id).order("created_at"),
+    admin.from("classes").select("id, name").eq("org_id", myMember.org_id).order("name"),
+    admin.from("class_teachers").select("class_id, user_id"),
+  ]);
 
-  // Busca perfis dos membros
   const userIds = members?.map(m => m.user_id) ?? [];
-  const { data: profiles } = await admin
-    .from("profiles")
-    .select("id, full_name")
-    .in("id", userIds);
+  const { data: profiles } = await admin.from("profiles").select("id, full_name").in("id", userIds);
 
-  // Busca emails via auth admin
-  const authUsers = await Promise.all(
-    userIds.map(id => admin.auth.admin.getUserById(id))
-  );
-  const emailMap = Object.fromEntries(
-    authUsers.map(r => [r.data.user?.id, r.data.user?.email ?? ""])
-  );
-  const nameMap = Object.fromEntries(
-    (profiles ?? []).map(p => [p.id, p.full_name ?? ""])
-  );
+  const authUsers = await Promise.all(userIds.map(id => admin.auth.admin.getUserById(id)));
+  const emailMap = Object.fromEntries(authUsers.map(r => [r.data.user?.id, r.data.user?.email ?? ""]));
+  const nameMap = Object.fromEntries((profiles ?? []).map(p => [p.id, p.full_name ?? ""]));
+
+  // Mapa user_id → lista de class_ids vinculados
+  const teacherClassMap: Record<string, string[]> = {};
+  for (const ct of classTeachers ?? []) {
+    if (!teacherClassMap[ct.user_id]) teacherClassMap[ct.user_id] = [];
+    teacherClassMap[ct.user_id].push(ct.class_id);
+  }
 
   const membersData = (members ?? []).map(m => ({
     id: m.id,
@@ -58,18 +59,27 @@ export default async function AdminPage() {
     name: nameMap[m.user_id] || "Sem nome",
     email: emailMap[m.user_id] || "",
     created_at: m.created_at,
+    assignedClasses: teacherClassMap[m.user_id] ?? [],
   }));
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold">Administração</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">Gerencie membros da sua igreja.</p>
-      </div>
+    <Box sx={{ maxWidth: 600, mx: "auto" }}>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h5" sx={{ fontWeight: 800 }}>Administração</Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
+          Gerencie membros de suas classes.
+        </Typography>
+      </Box>
 
-      <InviteForm />
-
-      <MembersList members={membersData} currentUserId={user.id} orgId={myMember.org_id} />
-    </div>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <InviteForm />
+        <MembersList
+          members={membersData}
+          currentUserId={user.id}
+          orgId={myMember.org_id}
+          classes={classes?.map(c => ({ id: c.id, name: c.name })) ?? []}
+        />
+      </Box>
+    </Box>
   );
 }

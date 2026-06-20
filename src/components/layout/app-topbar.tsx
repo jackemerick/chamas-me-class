@@ -19,12 +19,14 @@ import { signOut } from "@/actions/auth";
 interface AppTopbarProps {
   user: User;
   orgName: string;
+  avatarUrl: string | null;
+  displayName: string;
 }
 
-export function AppTopbar({ user, orgName }: AppTopbarProps) {
+export function AppTopbar({ user, orgName, avatarUrl, displayName }: AppTopbarProps) {
   const [anchor, setAnchor] = useState<null | HTMLElement>(null);
   const email = user.email ?? "";
-  const initials = email.slice(0, 2).toUpperCase();
+  const initials = (displayName || email).charAt(0).toUpperCase();
 
   async function handleSignOut() {
     await signOut();
@@ -45,26 +47,19 @@ export function AppTopbar({ user, orgName }: AppTopbarProps) {
       }}
     >
       <Toolbar sx={{ minHeight: { xs: 56, md: 64 } }}>
-        {/* Nome da org — só mobile (desktop tem sidebar) */}
         <Typography
           variant="subtitle1"
-          sx={{ flexGrow: 1, display: { xs: "block", md: "none" }, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+          sx={{ flexGrow: 1, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
         >
           {orgName}
         </Typography>
-        <div style={{ flexGrow: 1 }} className="hidden md:block" />
 
         <IconButton onClick={(e) => setAnchor(e.currentTarget)} size="small">
           <Avatar
-            sx={{
-              width: 36,
-              height: 36,
-              bgcolor: "primary.main",
-              fontSize: 13,
-              fontWeight: 700,
-            }}
+            src={avatarUrl ?? undefined}
+            sx={{ width: 36, height: 36, bgcolor: "primary.main", fontSize: 13, fontWeight: 700 }}
           >
-            {initials}
+            {!avatarUrl && initials}
           </Avatar>
         </IconButton>
 
@@ -78,21 +73,17 @@ export function AppTopbar({ user, orgName }: AppTopbarProps) {
         >
           <MenuItem disabled sx={{ opacity: "1 !important" }}>
             <Typography variant="caption" color="text.secondary" noWrap>
-              {email}
+              {displayName ? `${displayName} · ${email}` : email}
             </Typography>
           </MenuItem>
           <Divider />
-          <MenuItem
-            onClick={() => { setAnchor(null); window.location.href = "/perfil"; }}
-          >
+          <MenuItem onClick={() => { setAnchor(null); window.location.href = "/perfil"; }}>
             <ListItemIcon><PersonRoundedIcon fontSize="small" /></ListItemIcon>
             Meu perfil
           </MenuItem>
           <Divider />
           <MenuItem onClick={handleSignOut} sx={{ color: "error.main" }}>
-            <ListItemIcon>
-              <LogoutRoundedIcon fontSize="small" color="error" />
-            </ListItemIcon>
+            <ListItemIcon><LogoutRoundedIcon fontSize="small" color="error" /></ListItemIcon>
             Sair
           </MenuItem>
         </Menu>

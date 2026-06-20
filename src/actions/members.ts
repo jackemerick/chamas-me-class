@@ -79,3 +79,61 @@ export async function removerMembro(formData: FormData) {
   revalidatePath("/admin");
   return { success: true };
 }
+
+const classAssignSchema = z.object({
+  user_id: z.string().uuid(),
+  class_id: z.string().uuid(),
+  org_id: z.string().uuid(),
+});
+
+export async function vincularClasse(formData: FormData) {
+  const parsed = classAssignSchema.safeParse({
+    user_id: formData.get("user_id"),
+    class_id: formData.get("class_id"),
+    org_id: formData.get("org_id"),
+  });
+  if (!parsed.success) return { error: "Dados inválidos." };
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Não autenticado." };
+
+  const isAdmin = await verificarAdmin(user.id, parsed.data.org_id);
+  if (!isAdmin) return { error: "Sem permissão." };
+
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("class_teachers")
+    .upsert({ class_id: parsed.data.class_id, user_id: parsed.data.user_id, added_by: user.id });
+
+  if (error) return { error: "Erro ao vincular classe." };
+  revalidatePath("/admin");
+  return { success: true };
+}
+
+export async function desvincularClasse(formData: FormData) {
+  const parsed = classAssignSchema.safeParse({
+    user_id: formData.get("user_id"),
+    class_id: formData.get("class_id"),
+    org_id: formData.get("org_id"),
+  });
+  if (!parsed.success) return { error: "Dados inválidos." };
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Não autenticado." };
+
+  const isAdmin = await verificarAdmin(user.id, parsed.data.org_id);
+  if (!isAdmin) return { error: "Sem permissão." };
+
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("class_teachers")
+    .delete()
+    .eq("class_id", parsed.data.class_id)
+    .eq("user_id", parsed.data.user_id);
+
+  if (error) return { error: "Erro ao desvincular classe." };
+  revalidatePath("/admin");
+  return { success: true };
+}

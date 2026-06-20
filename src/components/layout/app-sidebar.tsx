@@ -17,7 +17,7 @@ import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import EmojiEventsRoundedIcon from "@mui/icons-material/EmojiEventsRounded";
-import AdminPanelSettingsRoundedIcon from "@mui/icons-material/AdminPanelSettingsRounded";
+import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
@@ -38,6 +38,8 @@ interface SidebarProps {
   currentPath: string;
   allOrgs: OrgBasic[];
   activeOrgId: string;
+  avatarUrl: string | null;
+  displayName: string;
 }
 
 const navItems = [
@@ -48,7 +50,7 @@ const navItems = [
   { href: "/pontos", label: "Pontos", icon: <EmojiEventsRoundedIcon /> },
 ];
 
-export function AppSidebar({ org, role, currentPath, allOrgs, activeOrgId }: SidebarProps) {
+export function AppSidebar({ org, role, currentPath, allOrgs, activeOrgId, avatarUrl, displayName }: SidebarProps) {
   const router = useRouter();
   const [orgMenuAnchor, setOrgMenuAnchor] = useState<null | HTMLElement>(null);
   const isAdmin = role === "admin" || role === "superadmin";
@@ -175,7 +177,7 @@ export function AppSidebar({ org, role, currentPath, allOrgs, activeOrgId }: Sid
                 }}
               >
                 <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>
-                  <AdminPanelSettingsRoundedIcon />
+                  <SettingsRoundedIcon />
                 </ListItemIcon>
                 <ListItemText primary="Administração" slotProps={{ primary: { style: { fontSize: 14 } } }} />
               </ListItemButton>
@@ -183,6 +185,32 @@ export function AppSidebar({ org, role, currentPath, allOrgs, activeOrgId }: Sid
           </>
         )}
       </List>
+
+      {/* Rodapé — perfil */}
+      <Link href="/perfil" style={{ textDecoration: "none" }}>
+        <Box
+          sx={{
+            px: 2,
+            py: 1.5,
+            display: "flex",
+            alignItems: "center",
+            gap: 1.5,
+            borderTop: "1px solid rgba(255,255,255,0.1)",
+            cursor: "pointer",
+            "&:hover": { bgcolor: "rgba(255,255,255,0.08)" },
+          }}
+        >
+          <Avatar
+            src={avatarUrl ?? undefined}
+            sx={{ width: 30, height: 30, bgcolor: "#F2542D", fontSize: 12, fontWeight: 700 }}
+          >
+            {!avatarUrl && (displayName || "?").charAt(0).toUpperCase()}
+          </Avatar>
+          <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.7)", fontWeight: 500 }} noWrap>
+            {displayName || "Meu perfil"}
+          </Typography>
+        </Box>
+      </Link>
     </Drawer>
   );
 }
