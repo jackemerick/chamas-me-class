@@ -6,38 +6,34 @@ import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 import Paper from "@mui/material/Paper";
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
+import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
-import EmojiEventsRoundedIcon from "@mui/icons-material/EmojiEventsRounded";
 import AdminPanelSettingsRoundedIcon from "@mui/icons-material/AdminPanelSettingsRounded";
+import EmojiEventsRoundedIcon from "@mui/icons-material/EmojiEventsRounded";
 
 interface BottomNavProps {
   isAdmin: boolean;
 }
 
-const routes = [
+// Mobile: Início, Classes, Alunos, Agenda, Admin (ou Pontos se não for admin)
+const baseRoutes = [
   { value: "/dashboard", label: "Início", icon: <HomeRoundedIcon /> },
   { value: "/turmas", label: "Classes", icon: <MenuBookRoundedIcon /> },
+  { value: "/alunos", label: "Alunos", icon: <PeopleRoundedIcon /> },
   { value: "/agenda", label: "Agenda", icon: <CalendarMonthRoundedIcon /> },
-  { value: "/pontos", label: "Pontos", icon: <EmojiEventsRoundedIcon /> },
 ];
 
-const adminRoute = {
-  value: "/admin",
-  label: "Admin",
-  icon: <AdminPanelSettingsRoundedIcon />,
-};
+const adminRoute = { value: "/admin", label: "Admin", icon: <AdminPanelSettingsRoundedIcon /> };
+const pontosRoute = { value: "/pontos", label: "Pontos", icon: <EmojiEventsRoundedIcon /> };
 
 export function BottomNav({ isAdmin }: BottomNavProps) {
   const router = useRouter();
   const pathname = usePathname();
 
-  const items = isAdmin ? [...routes, adminRoute] : routes;
+  const items = [...baseRoutes, isAdmin ? adminRoute : pontosRoute];
 
-  // Determina qual tab está ativa
   const active = items.find(
-    (r) =>
-      pathname === r.value ||
-      (r.value !== "/dashboard" && pathname.startsWith(r.value))
+    (r) => pathname === r.value || (r.value !== "/dashboard" && pathname.startsWith(r.value))
   )?.value ?? "/dashboard";
 
   return (
@@ -52,21 +48,14 @@ export function BottomNav({ isAdmin }: BottomNavProps) {
       }}
       elevation={8}
     >
-      <BottomNavigation
-        value={active}
-        onChange={(_, val) => router.push(val)}
-        showLabels
-      >
+      <BottomNavigation value={active} onChange={(_, val) => router.push(val)} showLabels>
         {items.map((item) => (
           <BottomNavigationAction
             key={item.value}
             value={item.value}
             label={item.label}
             icon={item.icon}
-            sx={{
-              color: "text.secondary",
-              "&.Mui-selected": { color: "primary.main" },
-            }}
+            sx={{ color: "text.secondary", "&.Mui-selected": { color: "primary.main" } }}
           />
         ))}
       </BottomNavigation>

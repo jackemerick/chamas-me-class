@@ -18,6 +18,7 @@ import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import EmojiEventsRoundedIcon from "@mui/icons-material/EmojiEventsRounded";
 import AdminPanelSettingsRoundedIcon from "@mui/icons-material/AdminPanelSettingsRounded";
+import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
 import ExpandMoreRoundedIcon from "@mui/icons-material/ExpandMoreRounded";
 import CheckRoundedIcon from "@mui/icons-material/CheckRounded";
 import { useState } from "react";
@@ -42,6 +43,7 @@ interface SidebarProps {
 const navItems = [
   { href: "/dashboard", label: "Início", icon: <HomeRoundedIcon /> },
   { href: "/turmas", label: "Classes", icon: <MenuBookRoundedIcon /> },
+  { href: "/alunos", label: "Alunos", icon: <PeopleRoundedIcon /> },
   { href: "/agenda", label: "Agenda", icon: <CalendarMonthRoundedIcon /> },
   { href: "/pontos", label: "Pontos", icon: <EmojiEventsRoundedIcon /> },
 ];

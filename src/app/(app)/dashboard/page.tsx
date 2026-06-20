@@ -1,72 +1,160 @@
-import { redirect } from "next/navigation";
 import type { Metadata } from "next";
+import Link from "next/link";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { cookies } from "next/headers";
-import { ClassCard } from "@/components/classes/class-card";
-import { NewClassButton } from "@/components/turmas/new-class-button";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardActionArea from "@mui/material/CardActionArea";
+import Chip from "@mui/material/Chip";
+import Divider from "@mui/material/Divider";
+import LinearProgress from "@mui/material/LinearProgress";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
+import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
+import { buscarDadosDashboard } from "@/actions/dashboard";
 
-export const metadata: Metadata = { title: "Dashboard" };
+export const metadata: Metadata = { title: "Início" };
+
+function formatDate(dateStr: string) {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString("pt-BR", {
+    weekday: "short", day: "numeric", month: "short",
+  });
+}
 
 export default async function DashboardPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-
-  const cookieStore = await cookies();
-  const admin = createAdminClient();
-
-  const { data: memberships } = await admin
-    .from("org_members")
-    .select("org_id")
-    .eq("user_id", user.id);
-
-  const orgId = cookieStore.get("active_org")?.value ?? memberships?.[0]?.org_id;
-  if (!orgId) redirect("/onboarding");
-
-  const { data: classes } = await admin
-    .from("classes")
-    .select("id, name, group_label, created_at, students(count)")
-    .eq("org_id", orgId)
-    .order("created_at", { ascending: false });
+  const { classes, nextMeetings } = await buscarDadosDashboard();
 
   return (
-    <Box>
-      <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", mb: 3, gap: 2 }}>
-        <Box>
-          <Typography variant="h5" sx={{ fontWeight: 800 }}>Classes</Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>
-            {classes?.length ?? 0} {classes?.length === 1 ? "classe ativa" : "classes ativas"}
-          </Typography>
-        </Box>
-        <NewClassButton />
-      </Box>
+    <Box sx={{ maxWidth: 640, mx: "auto" }}>
+      <Typography variant="h5" sx={{ fontWeight: 800, mb: 3 }}>Início</Typography>
 
-      {classes && classes.length > 0 ? (
-        <Box sx={{ display: "grid", gap: 2, gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" } }}>
+      {/* Cards por classe */}
+      {classes.length === 0 ? (
+        <Card elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3, textAlign: "center", py: 6 }}>
+          <MenuBookRoundedIcon sx={{ fontSize: 40, color: "text.disabled", mb: 1 }} />
+          <Typography variant="body2" color="text.secondary">
+            Nenhuma classe encontrada.
+          </Typography>
+        </Card>
+      ) : (
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 3 }}>
           {classes.map((cls) => (
-            <ClassCard
-              key={cls.id}
-              id={cls.id}
-              name={cls.name}
-              groupLabel={cls.group_label}
-              studentCount={Array.isArray(cls.students) ? cls.students.length : 0}
-            />
+            <Card key={cls.id} elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3 }}>
+              <CardActionArea component={Link} href={`/turmas/${cls.id}`} sx={{ borderRadius: "12px 12px 0 0" }}>
+                <CardContent sx={{ pb: 1.5 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>
+                    <Typography sx={{ fontWeight: 700, flex: 1 }} noWrap>{cls.name}</Typography>
+                    {cls.group_label && (
+                      <Chip label={cls.group_label} size="small" sx={{ fontSize: 11, height: 20 }} />
+                    )}
+                  </Box>
+
+                  {/* Métricas */}
+                  <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 1.5 }}>
+                    {/* Alunos */}
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                      <PeopleRoundedIcon sx={{ fontSize: 16, color: "text.disabled" }} />
+                      <Box>
+                        <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1, fontSize: 18 }}>
+                          {cls.studentCount}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">alunos</Typography>
+                      </Box>
+                    </Box>
+
+                    {/* Frequência */}
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                      <CalendarMonthRoundedIcon sx={{ fontSize: 16, color: "text.disabled" }} />
+                      <Box>
+                        <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1, fontSize: 18 }}>
+                          {cls.attendanceAvg !== null ? `${cls.attendanceAvg}%` : "--"}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">presença</Typography>
+                      </Box>
+                    </Box>
+
+                    {/* Conclusão */}
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                      <CheckCircleRoundedIcon sx={{ fontSize: 16, color: "text.disabled" }} />
+                      <Box>
+                        <Typography variant="h6" sx={{ fontWeight: 800, lineHeight: 1, fontSize: 18 }}>
+                          {cls.completionPct !== null ? `${cls.completionPct}%` : "--"}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">conclusão</Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </CardActionArea>
+
+              {/* Barra de progresso do planejamento */}
+              {cls.planTotal > 0 && (
+                <Box sx={{ px: 2, pb: 1.5 }}>
+                  <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
+                    <Typography variant="caption" color="text.secondary">
+                      Planejamento: {cls.planCompleted}/{cls.planTotal} aulas
+                    </Typography>
+                    <Typography variant="caption" sx={{ fontWeight: 600, color: "primary.main" }}>
+                      {cls.completionPct}%
+                    </Typography>
+                  </Box>
+                  <LinearProgress
+                    variant="determinate"
+                    value={cls.completionPct ?? 0}
+                    sx={{
+                      height: 6,
+                      borderRadius: 3,
+                      bgcolor: "#33403514",
+                      "& .MuiLinearProgress-bar": { bgcolor: "primary.main", borderRadius: 3 },
+                    }}
+                  />
+                </Box>
+              )}
+            </Card>
           ))}
         </Box>
-      ) : (
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", py: 12, textAlign: "center" }}>
-          <Box sx={{ width: 64, height: 64, borderRadius: 3, bgcolor: "#33403514", display: "flex", alignItems: "center", justifyContent: "center", mb: 2 }}>
-            <MenuBookRoundedIcon sx={{ color: "primary.main", fontSize: 32 }} />
-          </Box>
-          <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>Nenhuma classe ainda</Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 280, mb: 3 }}>
-            Crie a primeira classe para começar a gerenciar alunos, encontros e presença.
+      )}
+
+      {/* Próximos encontros */}
+      {nextMeetings.length > 0 && (
+        <Box>
+          <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5, color: "text.secondary", textTransform: "uppercase", letterSpacing: 0.5, fontSize: 11 }}>
+            Próximos encontros
           </Typography>
-          <NewClassButton />
+          <Card elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3 }}>
+            <List disablePadding>
+              {nextMeetings.map((m, idx) => (
+                <Box key={m.id}>
+                  {idx > 0 && <Divider />}
+                  <ListItem
+                    sx={{ px: 2, py: 1.25 }}
+                    secondaryAction={
+                      <Typography variant="caption" color="text.secondary">
+                        {formatDate(m.date)}
+                      </Typography>
+                    }
+                  >
+                    <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "#F2542D", mr: 1.5, flexShrink: 0 }} />
+                    <ListItemText
+                      primary={
+                        <Typography variant="body2" sx={{ fontWeight: 600 }} noWrap>
+                          {m.theme ?? "Sem tema"}
+                        </Typography>
+                      }
+                      secondary={
+                        <Typography variant="caption" color="text.secondary">{m.class_name}</Typography>
+                      }
+                    />
+                  </ListItem>
+                </Box>
+              ))}
+            </List>
+          </Card>
         </Box>
       )}
     </Box>
