@@ -220,6 +220,7 @@ export type Database = {
           class_id: string;
           name: string;
           birthdate: string | null;
+          city: string | null;
           responsible_name: string | null;
           responsible_phone: string | null;
           created_by: string | null;
@@ -230,6 +231,7 @@ export type Database = {
           class_id: string;
           name: string;
           birthdate?: string | null;
+          city?: string | null;
           responsible_name?: string | null;
           responsible_phone?: string | null;
           created_by?: string | null;
@@ -240,6 +242,7 @@ export type Database = {
           class_id?: string;
           name?: string;
           birthdate?: string | null;
+          city?: string | null;
           responsible_name?: string | null;
           responsible_phone?: string | null;
           created_by?: string | null;
