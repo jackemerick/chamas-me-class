@@ -55,6 +55,33 @@ export type Database = {
         };
         Relationships: [];
       };
+      invites: {
+        Row: {
+          id: string;
+          org_id: string;
+          code: string;
+          created_by: string | null;
+          used_by: string | null;
+          used_at: string | null;
+          expires_at: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          org_id: string;
+          code: string;
+          created_by?: string | null;
+          used_by?: string | null;
+          used_at?: string | null;
+          expires_at?: string;
+          created_at?: string;
+        };
+        Update: {
+          used_by?: string | null;
+          used_at?: string | null;
+        };
+        Relationships: [];
+      };
       org_members: {
         Row: {
           id: string;

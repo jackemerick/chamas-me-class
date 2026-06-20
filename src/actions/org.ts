@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { z } from "zod";
 import { redirect } from "next/navigation";
 
@@ -38,8 +39,10 @@ export async function createOrg(formData: FormData) {
 
   if (!user) return { error: "Não autenticado." };
 
+  const admin = createAdminClient();
+
   // Verifica se o slug ja existe
-  const { data: existing } = await supabase
+  const { data: existing } = await admin
     .from("organizations")
     .select("id")
     .eq("slug", parsed.data.slug)
@@ -49,8 +52,8 @@ export async function createOrg(formData: FormData) {
     return { error: "Esse identificador já está em uso. Escolha outro." };
   }
 
-  // Cria a org
-  const { data: org, error: orgError } = await supabase
+  // Cria a org via admin (bypassa RLS no setup inicial)
+  const { data: org, error: orgError } = await admin
     .from("organizations")
     .insert({
       name: parsed.data.name,
@@ -61,11 +64,12 @@ export async function createOrg(formData: FormData) {
     .single();
 
   if (orgError || !org) {
-    return { error: "Erro ao criar organização. Tente novamente." };
+    console.error("Erro ao criar org:", orgError);
+    return { error: "Erro ao criar sua igreja. Tente novamente." };
   }
 
   // Adiciona o criador como admin
-  const { error: memberError } = await supabase.from("org_members").insert({
+  const { error: memberError } = await admin.from("org_members").insert({
     org_id: org.id,
     user_id: user.id,
     role: "admin",
@@ -73,7 +77,8 @@ export async function createOrg(formData: FormData) {
   });
 
   if (memberError) {
-    return { error: "Organização criada, mas houve um erro ao adicionar o membro. Contate o suporte." };
+    console.error("Erro ao adicionar membro:", memberError);
+    return { error: "Igreja criada, mas houve um erro ao configurar seu acesso. Contate o suporte." };
   }
 
   redirect("/dashboard");
@@ -96,19 +101,21 @@ export async function joinOrg(formData: FormData) {
 
   if (!user) return { error: "Não autenticado." };
 
+  const admin = createAdminClient();
+
   // Busca a org pelo slug
-  const { data: org } = await supabase
+  const { data: org } = await admin
     .from("organizations")
     .select("id, name")
     .eq("slug", parsed.data.slug)
     .single();
 
   if (!org) {
-    return { error: "Organização não encontrada. Verifique o identificador." };
+    return { error: "Igreja não encontrada. Verifique o código." };
   }
 
   // Verifica se ja e membro
-  const { data: existing } = await supabase
+  const { data: existing } = await admin
     .from("org_members")
     .select("id")
     .eq("org_id", org.id)
@@ -120,14 +127,15 @@ export async function joinOrg(formData: FormData) {
   }
 
   // Adiciona como member
-  const { error } = await supabase.from("org_members").insert({
+  const { error } = await admin.from("org_members").insert({
     org_id: org.id,
     user_id: user.id,
     role: "member",
   });
 
   if (error) {
-    return { error: "Erro ao entrar na organização. Tente novamente." };
+    console.error("Erro ao entrar na org:", error);
+    return { error: "Erro ao entrar na igreja. Tente novamente." };
   }
 
   redirect("/dashboard");

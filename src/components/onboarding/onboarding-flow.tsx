@@ -16,11 +16,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { createOrg, joinOrg } from "@/actions/org";
+import { createOrg } from "@/actions/org";
+import { entrarComConvite } from "@/actions/invite";
 
 type Mode = "choose" | "create" | "join";
 
-// Schema de criacao
 const createSchema = z.object({
   name: z.string().min(2, "Mínimo 2 caracteres").max(80),
   slug: z
@@ -30,9 +30,8 @@ const createSchema = z.object({
     .regex(/^[a-z0-9-]+$/, "Apenas letras minúsculas, números e hífens"),
 });
 
-// Schema de entrada
 const joinSchema = z.object({
-  slug: z.string().min(2, "Informe o identificador da sua igreja"),
+  code: z.string().min(1, "Informe o código de convite"),
 });
 
 type CreateForm = z.infer<typeof createSchema>;
@@ -41,17 +40,11 @@ type JoinForm = z.infer<typeof joinSchema>;
 export function OnboardingFlow() {
   const [mode, setMode] = useState<Mode>("choose");
 
-  if (mode === "create") {
-    return <CreateOrgForm onBack={() => setMode("choose")} />;
-  }
-
-  if (mode === "join") {
-    return <JoinOrgForm onBack={() => setMode("choose")} />;
-  }
+  if (mode === "create") return <CreateOrgForm onBack={() => setMode("choose")} />;
+  if (mode === "join") return <JoinOrgForm onBack={() => setMode("choose")} />;
 
   return (
     <div className="grid gap-4">
-      {/* Opcao: criar classe */}
       <Card
         className="cursor-pointer border-2 border-transparent hover:border-brand-accent transition-colors"
         onClick={() => setMode("create")}
@@ -64,7 +57,7 @@ export function OnboardingFlow() {
             <Plus className="w-5 h-5" style={{ color: "#F2542D" }} />
           </div>
           <div>
-            <h3 className="font-semibold mb-1">Criar sua classe</h3>
+            <h3 className="font-semibold mb-1">Criar conta para sua Igreja</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Configure o Chamas-me Class para sua igreja ou grupo. Você será o administrador.
             </p>
@@ -72,7 +65,6 @@ export function OnboardingFlow() {
         </CardContent>
       </Card>
 
-      {/* Opcao: entrar em classe existente */}
       <Card
         className="cursor-pointer border-2 border-transparent hover:border-brand-accent transition-colors"
         onClick={() => setMode("join")}
@@ -85,9 +77,9 @@ export function OnboardingFlow() {
             <LogIn className="w-5 h-5" style={{ color: "#7DAF9C" }} />
           </div>
           <div>
-            <h3 className="font-semibold mb-1">Entrar em sua classe</h3>
+            <h3 className="font-semibold mb-1">Entrar em conta de sua Igreja</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Sua igreja já usa o Chamas-me Class. Entre com o código que o administrador te passou.
+              Sua igreja já usa o Chamas-me Class. Entre com o código de convite que o administrador te passou.
             </p>
           </div>
         </CardContent>
@@ -102,11 +94,8 @@ function CreateOrgForm({ onBack }: { onBack: () => void }) {
     handleSubmit,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm<CreateForm>({
-    resolver: zodResolver(createSchema),
-  });
+  } = useForm<CreateForm>({ resolver: zodResolver(createSchema) });
 
-  // Gera slug automatico a partir do nome
   function handleNameChange(e: React.ChangeEvent<HTMLInputElement>) {
     const slug = e.target.value
       .toLowerCase()
@@ -121,20 +110,15 @@ function CreateOrgForm({ onBack }: { onBack: () => void }) {
     const formData = new FormData();
     formData.set("name", data.name);
     formData.set("slug", data.slug);
-
     const result = await createOrg(formData);
-    if (result?.error) {
-      toast.error(result.error);
-    }
+    if (result?.error) toast.error(result.error);
   }
 
   return (
     <Card className="border-0 shadow-xl">
       <CardHeader>
-        <CardTitle>Criar sua igreja</CardTitle>
-        <CardDescription>
-          Informe o nome da sua igreja ou grupo.
-        </CardDescription>
+        <CardTitle>Criar conta para sua Igreja</CardTitle>
+        <CardDescription>Informe o nome da sua igreja ou grupo.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -146,55 +130,18 @@ function CreateOrgForm({ onBack }: { onBack: () => void }) {
               autoFocus
               {...register("name", { onChange: handleNameChange })}
             />
-            {errors.name && (
-              <p className="text-sm text-destructive">{errors.name.message}</p>
-            )}
+            {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="slug">
-              Identificador{" "}
-              <span className="text-muted-foreground font-normal">
-                (único, não pode mudar depois)
-              </span>
-            </Label>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground shrink-0">cbsta.me/</span>
-              <Input
-                id="slug"
-                placeholder="minha-igreja"
-                {...register("slug")}
-              />
-            </div>
-            {errors.slug && (
-              <p className="text-sm text-destructive">{errors.slug.message}</p>
-            )}
-          </div>
+          {/* slug oculto — gerado automaticamente, nao mostrado ao usuario */}
+          <input type="hidden" {...register("slug")} />
 
           <div className="flex gap-3 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onBack}
-              disabled={isSubmitting}
-              className="flex-1"
-            >
+            <Button type="button" variant="outline" onClick={onBack} disabled={isSubmitting} className="flex-1">
               Voltar
             </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1"
-              style={{ backgroundColor: "#334035" }}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Criando...
-                </>
-              ) : (
-                "Criar igreja"
-              )}
+            <Button type="submit" disabled={isSubmitting} className="flex-1" style={{ backgroundColor: "#334035" }}>
+              {isSubmitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Criando...</> : "Criar igreja"}
             </Button>
           </div>
         </form>
@@ -208,70 +155,41 @@ function JoinOrgForm({ onBack }: { onBack: () => void }) {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<JoinForm>({
-    resolver: zodResolver(joinSchema),
-  });
+  } = useForm<JoinForm>({ resolver: zodResolver(joinSchema) });
 
   async function onSubmit(data: JoinForm) {
     const formData = new FormData();
-    formData.set("slug", data.slug);
-
-    const result = await joinOrg(formData);
-    if (result?.error) {
-      toast.error(result.error);
-    }
+    formData.set("code", data.code);
+    const result = await entrarComConvite(formData);
+    if (result?.error) toast.error(result.error);
   }
 
   return (
     <Card className="border-0 shadow-xl">
       <CardHeader>
-        <CardTitle>Entrar em sua igreja</CardTitle>
-        <CardDescription>
-          Solicite o código ao administrador da sua igreja.
-        </CardDescription>
+        <CardTitle>Entrar em conta de sua Igreja</CardTitle>
+        <CardDescription>Cole o código de convite que o administrador te enviou.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="slug">Código da igreja</Label>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground shrink-0">cbsta.me/</span>
-              <Input
-                id="slug"
-                placeholder="minha-igreja"
-                autoFocus
-                {...register("slug")}
-              />
-            </div>
-            {errors.slug && (
-              <p className="text-sm text-destructive">{errors.slug.message}</p>
-            )}
+            <Label htmlFor="code">Código de convite</Label>
+            <Input
+              id="code"
+              placeholder="Ex: ABCD-1234"
+              autoFocus
+              autoCapitalize="characters"
+              {...register("code")}
+            />
+            {errors.code && <p className="text-sm text-destructive">{errors.code.message}</p>}
           </div>
 
           <div className="flex gap-3 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onBack}
-              disabled={isSubmitting}
-              className="flex-1"
-            >
+            <Button type="button" variant="outline" onClick={onBack} disabled={isSubmitting} className="flex-1">
               Voltar
             </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1"
-              style={{ backgroundColor: "#334035" }}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Entrando...
-                </>
-              ) : (
-                "Entrar"
-              )}
+            <Button type="submit" disabled={isSubmitting} className="flex-1" style={{ backgroundColor: "#334035" }}>
+              {isSubmitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Entrando...</> : "Entrar"}
             </Button>
           </div>
         </form>
