@@ -77,15 +77,11 @@ export default async function TurmaPage({ params }: { params: Promise<{ id: stri
           </Typography>
         </Box>
         {isAdmin && (
-          <Button
-            component={Link}
-            href={`/turmas/${id}/editar`}
-            variant="outlined"
-            size="small"
-            startIcon={<SettingsRoundedIcon fontSize="small" />}
-          >
-            Editar
-          </Button>
+          <Link href={`/turmas/${id}/editar`} style={{ textDecoration: "none" }}>
+            <Button variant="outlined" size="small" startIcon={<SettingsRoundedIcon fontSize="small" />}>
+              Editar
+            </Button>
+          </Link>
         )}
       </Box>
 
@@ -111,48 +107,42 @@ export default async function TurmaPage({ params }: { params: Promise<{ id: stri
       </Box>
 
       {/* Link de planejamento */}
-      <Button
-        component={Link}
-        href={`/turmas/${id}/planejamento`}
-        variant="outlined"
-        fullWidth
-        startIcon={<ListAltRoundedIcon />}
-        sx={{ mb: 3, justifyContent: "flex-start", px: 2 }}
-      >
-        Ver planejamento de aulas
-        {planTotal > 0 && (
-          <Chip
-            label={`${Math.round((planCompleted / planTotal) * 100)}%`}
-            size="small"
-            sx={{ ml: "auto", height: 20, fontSize: 11 }}
-          />
-        )}
-      </Button>
+      <Link href={`/turmas/${id}/planejamento`} style={{ textDecoration: "none" }}>
+        <Button
+          variant="outlined"
+          fullWidth
+          startIcon={<ListAltRoundedIcon />}
+          sx={{ mb: 3, justifyContent: "flex-start", px: 2 }}
+        >
+          Ver planejamento de aulas
+          {planTotal > 0 && (
+            <Chip
+              label={`${Math.round((planCompleted / planTotal) * 100)}%`}
+              size="small"
+              sx={{ ml: "auto", height: 20, fontSize: 11 }}
+            />
+          )}
+        </Button>
+      </Link>
 
       {/* Alunos */}
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Alunos</Typography>
-          <Button
-            component={Link}
-            href={`/turmas/${id}/alunos/novo`}
-            variant="contained"
-            size="small"
-            startIcon={<PersonAddRoundedIcon />}
-          >
-            Adicionar
-          </Button>
+          <Link href={`/turmas/${id}/alunos/novo`} style={{ textDecoration: "none" }}>
+            <Button variant="contained" size="small" startIcon={<PersonAddRoundedIcon />}>
+              Adicionar
+            </Button>
+          </Link>
         </Box>
 
         {students && students.length > 0 ? (
           <Card elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3 }}>
             <List disablePadding>
               {students.map((s, idx) => (
-                <Box key={s.id} component={Link} href={`/turmas/${id}/alunos/${s.id}`} sx={{ textDecoration: "none", color: "inherit", display: "block" }}>
+                <Link key={s.id} href={`/turmas/${id}/alunos/${s.id}`} style={{ textDecoration: "none", color: "inherit", display: "block" }}>
                   {idx > 0 && <Divider />}
-                  <ListItem
-                    sx={{ px: 2, py: 1.25, "&:hover": { bgcolor: "action.hover" }, transition: "background 0.15s" }}
-                  >
+                  <ListItem sx={{ px: 2, py: 1.25, "&:hover": { bgcolor: "action.hover" }, transition: "background 0.15s" }}>
                     <ListItemAvatar sx={{ minWidth: 44 }}>
                       <Avatar sx={{ width: 32, height: 32, bgcolor: "primary.main", fontSize: 12, fontWeight: 700 }}>
                         {s.name.charAt(0).toUpperCase()}
@@ -167,7 +157,7 @@ export default async function TurmaPage({ params }: { params: Promise<{ id: stri
                       ) : undefined}
                     />
                   </ListItem>
-                </Box>
+                </Link>
               ))}
             </List>
           </Card>
@@ -176,9 +166,11 @@ export default async function TurmaPage({ params }: { params: Promise<{ id: stri
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
               Nenhum aluno cadastrado ainda.
             </Typography>
-            <Button component={Link} href={`/turmas/${id}/alunos/novo`} variant="contained" size="small" startIcon={<PersonAddRoundedIcon />}>
-              Adicionar primeiro aluno
-            </Button>
+            <Link href={`/turmas/${id}/alunos/novo`} style={{ textDecoration: "none" }}>
+              <Button variant="contained" size="small" startIcon={<PersonAddRoundedIcon />}>
+                Adicionar primeiro aluno
+              </Button>
+            </Link>
           </Card>
         )}
       </Box>
@@ -187,16 +179,16 @@ export default async function TurmaPage({ params }: { params: Promise<{ id: stri
       <Box>
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Últimos encontros</Typography>
-          <Button component={Link} href={`/turmas/${id}/encontros`} variant="outlined" size="small">
-            Ver todos
-          </Button>
+          <Link href={`/turmas/${id}/encontros`} style={{ textDecoration: "none" }}>
+            <Button variant="outlined" size="small">Ver todos</Button>
+          </Link>
         </Box>
 
         {meetings && meetings.length > 0 ? (
           <Card elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3 }}>
             <List disablePadding>
               {meetings.map((m, idx) => (
-                <Box key={m.id} component={Link} href={`/turmas/${id}/encontros/${m.id}`} sx={{ textDecoration: "none", color: "inherit", display: "block" }}>
+                <Link key={m.id} href={`/turmas/${id}/encontros/${m.id}`} style={{ textDecoration: "none", color: "inherit", display: "block" }}>
                   {idx > 0 && <Divider />}
                   <ListItem sx={{ px: 2, py: 1.25, "&:hover": { bgcolor: "action.hover" }, transition: "background 0.15s" }}>
                     <ListItemAvatar sx={{ minWidth: 44 }}>
@@ -213,7 +205,7 @@ export default async function TurmaPage({ params }: { params: Promise<{ id: stri
                       }
                     />
                   </ListItem>
-                </Box>
+                </Link>
               ))}
             </List>
           </Card>

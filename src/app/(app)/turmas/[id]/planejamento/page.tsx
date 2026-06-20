@@ -49,16 +49,16 @@ export default async function PlanejamentoPage({ params }: { params: Promise<{ i
   return (
     <Box sx={{ maxWidth: 560, mx: "auto" }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
-        <Button
-          component={Link}
-          href={`/turmas/${id}`}
-          size="small"
-          variant="text"
-          startIcon={<ArrowBackRoundedIcon />}
-          sx={{ color: "text.secondary" }}
-        >
-          {cls.name}
-        </Button>
+        <Link href={`/turmas/${id}`} style={{ textDecoration: "none" }}>
+          <Button
+            size="small"
+            variant="text"
+            startIcon={<ArrowBackRoundedIcon />}
+            sx={{ color: "text.secondary" }}
+          >
+            {cls.name}
+          </Button>
+        </Link>
       </Box>
 
       <PlanClient classId={id} plans={plans ?? []} />

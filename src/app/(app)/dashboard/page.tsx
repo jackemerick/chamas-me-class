@@ -45,7 +45,8 @@ export default async function DashboardPage() {
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mb: 3 }}>
           {classes.map((cls) => (
             <Card key={cls.id} elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3 }}>
-              <CardActionArea component={Link} href={`/turmas/${cls.id}`} sx={{ borderRadius: "12px 12px 0 0" }}>
+              <Link href={`/turmas/${cls.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                <CardActionArea sx={{ borderRadius: "12px 12px 0 0" }}>
                 <CardContent sx={{ pb: 1.5 }}>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>
                     <Typography sx={{ fontWeight: 700, flex: 1 }} noWrap>{cls.name}</Typography>
@@ -90,7 +91,8 @@ export default async function DashboardPage() {
                     </Box>
                   </Box>
                 </CardContent>
-              </CardActionArea>
+                </CardActionArea>
+              </Link>
 
               {/* Barra de progresso do planejamento */}
               {cls.planTotal > 0 && (
