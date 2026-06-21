@@ -14,7 +14,7 @@ const criterioSchema = z.object({
   texto_livre: z.string().max(800).optional(),
   assinatura_nome: z.string().max(80).optional(),
   assinatura_cargo: z.string().max(60).optional(),
-  data_emissao: z.string().optional(), // YYYY-MM-DD
+  data_emissao: z.string().optional(),
 });
 
 export async function salvarCriterioCertificado(formData: FormData) {
@@ -37,13 +37,58 @@ export async function salvarCriterioCertificado(formData: FormData) {
 
   const admin = createAdminClient();
 
+  // Upload do background se enviado
+  let background_url: string | undefined;
+  const file = formData.get("background_file") as File | null;
+  if (file && file.size > 0) {
+    if (file.size > 1_048_576) return { error: "A imagem de fundo deve ter no máximo 1MB." };
+    if (!file.type.startsWith("image/")) return { error: "Formato inválido. Envie uma imagem." };
+
+    const bytes = await file.arrayBuffer();
+    const ext = file.name.split(".").pop() ?? "png";
+    const path = `cert-backgrounds/${parsed.data.class_id}.${ext}`;
+
+    const { error: uploadError } = await admin.storage
+      .from("profiles")
+      .upload(path, bytes, { upsert: true, contentType: file.type });
+
+    if (uploadError) return { error: "Erro ao fazer upload da imagem." };
+
+    const { data: urlData } = admin.storage.from("profiles").getPublicUrl(path);
+    background_url = urlData.publicUrl;
+  }
+
+  const payload = {
+    ...parsed.data,
+    ...(background_url ? { background_url } : {}),
+  };
+
   const { error } = await admin
     .from("cert_criteria")
-    .upsert({ ...parsed.data }, { onConflict: "class_id" });
+    .upsert(payload, { onConflict: "class_id" });
 
   if (error) return { error: "Erro ao salvar critérios." };
 
   revalidatePath(`/turmas/${parsed.data.class_id}/certificado`);
+  return { success: true };
+}
+
+export async function removerBackgroundCertificado(classId: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Não autenticado." };
+
+  const admin = createAdminClient();
+
+  // Remove arquivos possíveis (png, jpg, jpeg, webp)
+  await Promise.allSettled(
+    ["png", "jpg", "jpeg", "webp"].map(ext =>
+      admin.storage.from("profiles").remove([`cert-backgrounds/${classId}.${ext}`])
+    )
+  );
+
+  await admin.from("cert_criteria").update({ background_url: null }).eq("class_id", classId);
+  revalidatePath(`/turmas/${classId}/certificado`);
   return { success: true };
 }
 

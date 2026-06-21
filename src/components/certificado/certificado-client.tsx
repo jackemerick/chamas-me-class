@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -13,10 +13,13 @@ import Avatar from "@mui/material/Avatar";
 import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
 import Slider from "@mui/material/Slider";
+import IconButton from "@mui/material/IconButton";
 import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import WorkspacePremiumRoundedIcon from "@mui/icons-material/WorkspacePremiumRounded";
-import { salvarCriterioCertificado } from "@/actions/certificado";
+import ImageRoundedIcon from "@mui/icons-material/ImageRounded";
+import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import { salvarCriterioCertificado, removerBackgroundCertificado } from "@/actions/certificado";
 
 interface Criterio {
   temporada: string | null;
@@ -27,6 +30,7 @@ interface Criterio {
   assinatura_nome: string | null;
   assinatura_cargo: string | null;
   data_emissao: string | null;
+  background_url: string | null;
 }
 
 interface Elegivel {
@@ -48,8 +52,9 @@ interface CertificadoClientProps {
 
 export function CertificadoClient({ classId, className, criteria, elegibility, totalMeetings }: CertificadoClientProps) {
   const [saving, setSaving] = useState(false);
+  const [removingBg, setRemovingBg] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Campos do formulário
   const [temporada, setTemporada] = useState(criteria?.temporada ?? "");
   const [titulo, setTitulo] = useState(criteria?.titulo ?? "Certificado de Participação");
   const [textoLivre, setTextoLivre] = useState(criteria?.texto_livre ?? "");
@@ -59,13 +64,34 @@ export function CertificadoClient({ classId, className, criteria, elegibility, t
   const [minPct, setMinPct] = useState(criteria?.min_attendance_pct ?? 75);
   const [minPts, setMinPts] = useState(criteria?.min_points ?? 0);
 
-  const elegiveis = eligibility_computed();
+  // background
+  const [bgFile, setBgFile] = useState<File | null>(null);
+  const [bgPreview, setBgPreview] = useState<string | null>(criteria?.background_url ?? null);
 
-  function eligibility_computed() {
-    return elegibility.map(s => ({
-      ...s,
-      elegivel: s.pct >= minPct && s.pts >= minPts,
-    }));
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 1_048_576) { toast.error("Imagem deve ter no máximo 1MB."); return; }
+    if (!file.type.startsWith("image/")) { toast.error("Formato inválido. Envie uma imagem."); return; }
+    setBgFile(file);
+    setBgPreview(URL.createObjectURL(file));
+  }
+
+  function handleRemoveLocal() {
+    setBgFile(null);
+    setBgPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  async function handleRemoveSaved() {
+    setRemovingBg(true);
+    const result = await removerBackgroundCertificado(classId);
+    setRemovingBg(false);
+    if (result?.error) { toast.error(result.error); return; }
+    toast.success("Fundo removido.");
+    setBgPreview(null);
+    setBgFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
   async function handleSave() {
@@ -80,13 +106,21 @@ export function CertificadoClient({ classId, className, criteria, elegibility, t
     fd.set("data_emissao", dataEmissao);
     fd.set("min_attendance_pct", String(minPct));
     fd.set("min_points", String(minPts));
+    if (bgFile) fd.set("background_file", bgFile);
     const result = await salvarCriterioCertificado(fd);
     setSaving(false);
     if (result?.error) { toast.error(result.error); return; }
-    toast.success("Critérios salvos.");
+    toast.success("Configuração salva.");
+    setBgFile(null);
   }
 
+  const elegiveis = elegibility.map(s => ({
+    ...s,
+    elegivel: s.pct >= minPct && s.pts >= minPts,
+  }));
   const totalElegiveis = elegiveis.filter(s => s.elegivel).length;
+
+  const hasSavedBg = !!criteria?.background_url && bgPreview === criteria?.background_url;
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -100,6 +134,76 @@ export function CertificadoClient({ classId, className, criteria, elegibility, t
           </Box>
 
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+
+            {/* Background */}
+            <Box>
+              <Typography variant="body2" sx={{ fontWeight: 700, mb: 1 }}>Imagem de fundo</Typography>
+              {bgPreview ? (
+                <Box sx={{ position: "relative", borderRadius: 2, overflow: "hidden", border: "1px solid", borderColor: "divider" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={bgPreview}
+                    alt="Fundo do certificado"
+                    style={{ width: "100%", maxHeight: 180, objectFit: "cover", display: "block" }}
+                  />
+                  <Box sx={{ position: "absolute", top: 8, right: 8, display: "flex", gap: 0.5 }}>
+                    <IconButton
+                      size="small"
+                      onClick={() => fileInputRef.current?.click()}
+                      sx={{ bgcolor: "rgba(255,255,255,0.9)", "&:hover": { bgcolor: "white" } }}
+                    >
+                      <ImageRoundedIcon sx={{ fontSize: 16 }} />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      onClick={hasSavedBg ? handleRemoveSaved : handleRemoveLocal}
+                      disabled={removingBg}
+                      sx={{ bgcolor: "rgba(255,255,255,0.9)", "&:hover": { bgcolor: "white" }, color: "error.main" }}
+                    >
+                      {removingBg
+                        ? <CircularProgress size={14} color="inherit" />
+                        : <DeleteOutlineRoundedIcon sx={{ fontSize: 16 }} />
+                      }
+                    </IconButton>
+                  </Box>
+                  {bgFile && (
+                    <Chip
+                      label="Não salvo"
+                      size="small"
+                      sx={{ position: "absolute", bottom: 8, left: 8, bgcolor: "#FFD16690", fontWeight: 700, fontSize: 10 }}
+                    />
+                  )}
+                </Box>
+              ) : (
+                <Box
+                  onClick={() => fileInputRef.current?.click()}
+                  sx={{
+                    border: "2px dashed",
+                    borderColor: "divider",
+                    borderRadius: 2,
+                    p: 3,
+                    textAlign: "center",
+                    cursor: "pointer",
+                    transition: "border-color 0.15s",
+                    "&:hover": { borderColor: "primary.main" },
+                  }}
+                >
+                  <ImageRoundedIcon sx={{ fontSize: 28, color: "text.disabled", mb: 0.5 }} />
+                  <Typography variant="body2" color="text.secondary">Clique para enviar o fundo</Typography>
+                  <Typography variant="caption" color="text.disabled">PNG ou JPG, máx. 1MB — recomendado A4 landscape (1754×1240px)</Typography>
+                </Box>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleFileChange}
+              />
+            </Box>
+
+            <Divider />
+
             {/* Temporada */}
             <TextField
               label="Temporada / Ano"
@@ -111,7 +215,7 @@ export function CertificadoClient({ classId, className, criteria, elegibility, t
               helperText="Identifica a turma e período no certificado"
             />
 
-            {/* Título do certificado */}
+            {/* Título */}
             <TextField
               label="Título do certificado"
               size="small"
@@ -136,7 +240,7 @@ export function CertificadoClient({ classId, className, criteria, elegibility, t
 
             <Divider />
 
-            {/* Critérios de elegibilidade */}
+            {/* Critérios */}
             <Typography variant="body2" sx={{ fontWeight: 700 }}>Critérios para receber o certificado</Typography>
 
             <Box>
@@ -211,7 +315,7 @@ export function CertificadoClient({ classId, className, criteria, elegibility, t
         </CardContent>
       </Card>
 
-      {/* Elegibilidade dos alunos */}
+      {/* Elegibilidade */}
       <Card elevation={0} sx={{ border: "1px solid", borderColor: "divider", borderRadius: 3 }}>
         <CardContent sx={{ pb: "12px !important" }}>
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
@@ -232,7 +336,7 @@ export function CertificadoClient({ classId, className, criteria, elegibility, t
           {elegiveis.length === 0 ? (
             <Typography variant="body2" color="text.secondary">Nenhum aluno cadastrado nesta classe.</Typography>
           ) : (
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 0 }}>
+            <Box>
               {elegiveis.map((s, idx) => (
                 <Box key={s.id}>
                   {idx > 0 && <Divider />}

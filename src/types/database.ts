@@ -422,6 +422,7 @@ export type Database = {
           assinatura_nome: string | null;
           assinatura_cargo: string | null;
           data_emissao: string | null;
+          background_url: string | null;
           created_at: string;
         };
         Insert: {
@@ -436,6 +437,7 @@ export type Database = {
           assinatura_nome?: string | null;
           assinatura_cargo?: string | null;
           data_emissao?: string | null;
+          background_url?: string | null;
           created_at?: string;
         };
         Update: {
@@ -450,6 +452,7 @@ export type Database = {
           assinatura_nome?: string | null;
           assinatura_cargo?: string | null;
           data_emissao?: string | null;
+          background_url?: string | null;
           created_at?: string;
         };
         Relationships: [];

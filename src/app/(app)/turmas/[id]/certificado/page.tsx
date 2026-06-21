@@ -38,6 +38,10 @@ export default async function CertificadoPage({ params }: { params: Promise<{ id
 
   const { criteria, elegibility, totalMeetings } = await buscarElegibilidade(id);
 
+  // garante que background_url chega no componente
+  type CriteriaWithBg = typeof criteria & { background_url?: string | null };
+  const criteriaFull = criteria as CriteriaWithBg | null;
+
   return (
     <Box sx={{ maxWidth: 560, mx: "auto" }}>
       <Box sx={{ mb: 3 }}>
@@ -53,7 +57,7 @@ export default async function CertificadoPage({ params }: { params: Promise<{ id
       <CertificadoClient
         classId={id}
         className={cls.name}
-        criteria={criteria ?? null}
+        criteria={criteriaFull ? { ...criteriaFull, background_url: criteriaFull.background_url ?? null } : null}
         elegibility={elegibility ?? []}
         totalMeetings={totalMeetings ?? 0}
       />
