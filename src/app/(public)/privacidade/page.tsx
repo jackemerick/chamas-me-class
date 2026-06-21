@@ -17,7 +17,7 @@ export default function PrivacidadePage() {
         <P>
           O Chamas-me Class é um sistema gratuito de gestão de classes bíblicas desenvolvido e mantido por
           Jack Lopes Emerick Dutra, pessoa física, de forma voluntária e sem fins lucrativos,
-          como parte do projeto Chamas-me. Contato: <a href="mailto:contato@jackemerick.com.br">contato@jackemerick.com.br</a>.
+          como parte do projeto Chamas-me. Contato: <a href="mailto:contato@chamas.me">contato@chamas.me</a>.
         </P>
       </Section>
 
@@ -87,7 +87,7 @@ export default function PrivacidadePage() {
           <li>Revogar o consentimento a qualquer momento;</li>
           <li>Solicitar a portabilidade dos dados.</li>
         </ul>
-        <P>Para exercer qualquer desses direitos, entre em contato: <a href="mailto:contato@jackemerick.com.br">contato@jackemerick.com.br</a>.</P>
+        <P>Para exercer qualquer desses direitos, entre em contato: <a href="mailto:contato@chamas.me">contato@chamas.me</a>.</P>
       </Section>
 
       <Section title="9. Segurança">
@@ -109,7 +109,7 @@ export default function PrivacidadePage() {
       <Section title="11. Contato">
         <P>
           Jack Lopes Emerick Dutra<br />
-          <a href="mailto:contato@jackemerick.com.br">contato@jackemerick.com.br</a>
+          <a href="mailto:contato@chamas.me">contato@chamas.me</a>
         </P>
       </Section>
     </Box>

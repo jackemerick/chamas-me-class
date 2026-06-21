@@ -93,7 +93,7 @@ export default async function AdminPage() {
             Termos de Uso
           </Link>
           {" · "}
-          contato@jackemerick.com.br
+          contato@chamas.me
         </Typography>
       </Box>
     </Box>

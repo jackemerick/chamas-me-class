@@ -88,7 +88,7 @@ export default function TermosPage() {
       <Section title="9. Encerramento de conta">
         <P>
           O usuário pode solicitar o encerramento da sua conta a qualquer momento via
-          {" "}<a href="mailto:contato@jackemerick.com.br">contato@jackemerick.com.br</a>.
+          {" "}<a href="mailto:contato@chamas.me">contato@chamas.me</a>.
           Administradores podem encerrar a organização, o que resultará na exclusão de todos os dados
           associados em até 30 dias.
         </P>
@@ -111,7 +111,7 @@ export default function TermosPage() {
       <Section title="12. Contato">
         <P>
           Jack Lopes Emerick Dutra<br />
-          <a href="mailto:contato@jackemerick.com.br">contato@jackemerick.com.br</a>
+          <a href="mailto:contato@chamas.me">contato@chamas.me</a>
         </P>
       </Section>
     </Box>
