@@ -9,9 +9,11 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get("type") as EmailOtpType | null;
   const next = searchParams.get("next") ?? "/dashboard";
 
-  if (token_hash && type) {
+  const resolvedType: EmailOtpType = type === "magiclink" ? "email" : (type ?? "email");
+
+  if (token_hash) {
     const supabase = await createClient();
-    const { error } = await supabase.auth.verifyOtp({ type, token_hash });
+    const { error } = await supabase.auth.verifyOtp({ type: resolvedType, token_hash });
 
     if (!error) {
       return NextResponse.redirect(`${origin}${next}`);
