@@ -7,6 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import ButtonBase from "@mui/material/ButtonBase";
 import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
+import { getFeriadosBrasil } from "@/lib/feriados";
 
 interface Meeting {
   id: string;
@@ -53,6 +54,7 @@ export function AgendaCalendar({ meetings, onDayClick }: CalendarProps) {
   }, {});
 
   const todayStr = today.toISOString().split("T")[0];
+  const feriados = getFeriadosBrasil(year);
 
   return (
     <Box sx={{ bgcolor: "background.paper", borderRadius: 3, border: "1px solid", borderColor: "divider", overflow: "hidden" }}>
@@ -91,6 +93,7 @@ export function AgendaCalendar({ meetings, onDayClick }: CalendarProps) {
           const dayMeetings = meetingsByDate[dateStr] ?? [];
           const isToday = dateStr === todayStr;
           const hasMeeting = dayMeetings.length > 0;
+          const isFeriado = feriados.has(dateStr);
 
           return (
             <ButtonBase
@@ -124,8 +127,8 @@ export function AgendaCalendar({ meetings, onDayClick }: CalendarProps) {
                 <Typography
                   variant="caption"
                   sx={{
-                    fontWeight: isToday ? 700 : 400,
-                    color: isToday ? "white" : "text.primary",
+                    fontWeight: isToday ? 700 : isFeriado ? 600 : 400,
+                    color: isToday ? "white" : isFeriado ? "#F2542D" : "text.primary",
                     fontSize: 12,
                   }}
                 >

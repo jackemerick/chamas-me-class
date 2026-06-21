@@ -17,6 +17,7 @@ import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import PersonAddRoundedIcon from "@mui/icons-material/PersonAddRounded";
 import ListAltRoundedIcon from "@mui/icons-material/ListAltRounded";
+import WorkspacePremiumRoundedIcon from "@mui/icons-material/WorkspacePremiumRounded";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -106,24 +107,36 @@ export default async function TurmaPage({ params }: { params: Promise<{ id: stri
         </Card>
       </Box>
 
-      {/* Link de planejamento */}
-      <Link href={`/turmas/${id}/planejamento`} style={{ textDecoration: "none" }}>
-        <Button
-          variant="outlined"
-          fullWidth
-          startIcon={<ListAltRoundedIcon />}
-          sx={{ mb: 3, justifyContent: "flex-start", px: 2 }}
-        >
-          Ver planejamento de aulas
-          {planTotal > 0 && (
-            <Chip
-              label={`${Math.round((planCompleted / planTotal) * 100)}%`}
-              size="small"
-              sx={{ ml: "auto", height: 20, fontSize: 11 }}
-            />
-          )}
-        </Button>
-      </Link>
+      {/* Links de ação */}
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mb: 3 }}>
+        <Link href={`/turmas/${id}/planejamento`} style={{ textDecoration: "none" }}>
+          <Button
+            variant="outlined"
+            fullWidth
+            startIcon={<ListAltRoundedIcon />}
+            sx={{ justifyContent: "flex-start", px: 2 }}
+          >
+            Ver planejamento de aulas
+            {planTotal > 0 && (
+              <Chip
+                label={`${Math.round((planCompleted / planTotal) * 100)}%`}
+                size="small"
+                sx={{ ml: "auto", height: 20, fontSize: 11 }}
+              />
+            )}
+          </Button>
+        </Link>
+        <Link href={`/turmas/${id}/certificado`} style={{ textDecoration: "none" }}>
+          <Button
+            variant="outlined"
+            fullWidth
+            startIcon={<WorkspacePremiumRoundedIcon />}
+            sx={{ justifyContent: "flex-start", px: 2 }}
+          >
+            Certificado
+          </Button>
+        </Link>
+      </Box>
 
       {/* Alunos */}
       <Box sx={{ mb: 3 }}>

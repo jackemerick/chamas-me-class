@@ -416,6 +416,12 @@ export type Database = {
           course_id: string | null;
           min_attendance_pct: number;
           min_points: number;
+          temporada: string | null;
+          titulo: string | null;
+          texto_livre: string | null;
+          assinatura_nome: string | null;
+          assinatura_cargo: string | null;
+          data_emissao: string | null;
           created_at: string;
         };
         Insert: {
@@ -424,6 +430,12 @@ export type Database = {
           course_id?: string | null;
           min_attendance_pct?: number;
           min_points?: number;
+          temporada?: string | null;
+          titulo?: string | null;
+          texto_livre?: string | null;
+          assinatura_nome?: string | null;
+          assinatura_cargo?: string | null;
+          data_emissao?: string | null;
           created_at?: string;
         };
         Update: {
@@ -432,6 +444,12 @@ export type Database = {
           course_id?: string | null;
           min_attendance_pct?: number;
           min_points?: number;
+          temporada?: string | null;
+          titulo?: string | null;
+          texto_livre?: string | null;
+          assinatura_nome?: string | null;
+          assinatura_cargo?: string | null;
+          data_emissao?: string | null;
           created_at?: string;
         };
         Relationships: [];
