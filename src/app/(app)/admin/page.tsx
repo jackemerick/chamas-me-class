@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import type { Metadata } from "next";
+import Link from "next/link";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { createClient } from "@/lib/supabase/server";
@@ -79,6 +80,21 @@ export default async function AdminPage() {
           orgId={myMember.org_id}
           classes={classes?.map(c => ({ id: c.id, name: c.name })) ?? []}
         />
+      </Box>
+
+      {/* Rodapé legal */}
+      <Box sx={{ mt: 6, pt: 3, borderTop: "1px solid", borderColor: "divider", textAlign: "center" }}>
+        <Typography variant="caption" color="text.disabled">
+          <Link href="/privacidade" style={{ color: "inherit", textDecoration: "underline" }}>
+            Privacidade e Segurança
+          </Link>
+          {" · "}
+          <Link href="/termos" style={{ color: "inherit", textDecoration: "underline" }}>
+            Termos de Uso
+          </Link>
+          {" · "}
+          contato@jackemerick.com.br
+        </Typography>
       </Box>
     </Box>
   );

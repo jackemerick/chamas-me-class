@@ -1,6 +1,7 @@
 import { LoginForm } from "@/components/auth/login-form";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Entrar" };
@@ -48,6 +49,19 @@ export default function LoginPage({
         </Box>
 
         <LoginForm searchParams={searchParams} />
+
+        {/* Links legais */}
+        <Box sx={{ textAlign: "center", mt: 3 }}>
+          <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.35)" }}>
+            <Link href="/privacidade" style={{ color: "inherit", textDecoration: "underline" }}>
+              Privacidade e Segurança
+            </Link>
+            {" · "}
+            <Link href="/termos" style={{ color: "inherit", textDecoration: "underline" }}>
+              Termos de Uso
+            </Link>
+          </Typography>
+        </Box>
       </Box>
     </Box>
   );
