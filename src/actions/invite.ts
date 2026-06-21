@@ -6,8 +6,6 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 const inviteSchema = z.object({
   email: z.string().email("E-mail inválido"),
 });
@@ -76,6 +74,7 @@ export async function enviarConvite(formData: FormData) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   const link = `${appUrl}/convite/${invite.token}`;
 
+  const resend = new Resend(process.env.RESEND_API_KEY);
   const { error: emailError } = await resend.emails.send({
     from: "Chamas-me Class <class@chamas.me>",
     to: email,
