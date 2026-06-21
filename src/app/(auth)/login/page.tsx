@@ -26,19 +26,8 @@ export default function LoginPage({
       <Box sx={{ width: "100%", maxWidth: 400 }}>
         {/* Logo */}
         <Box sx={{ textAlign: "center", mb: 4 }}>
-          <Box
-            sx={{
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: 64,
-              height: 64,
-              borderRadius: 3,
-              bgcolor: "#F2542D",
-              mb: 2,
-            }}
-          >
-            <Typography sx={{ color: "white", fontWeight: 800, fontSize: 24 }}>C</Typography>
+          <Box sx={{ mb: 2 }}>
+            <img src="/logo-min.svg" alt="Chamas-me Class" style={{ height: 48, width: "auto" }} />
           </Box>
           <Typography variant="h5" sx={{ fontWeight: 800, color: "white", display: "block" }}>
             Chamas-me Class
