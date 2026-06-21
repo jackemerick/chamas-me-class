@@ -2,15 +2,24 @@ import { LoginForm } from "@/components/auth/login-form";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Entrar" };
 
-export default function LoginPage({
+export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; token_hash?: string; type?: string }>;
 }) {
+  const params = await searchParams;
+
+  // Supabase às vezes redireciona para /login com token_hash — encaminha para /auth/confirm
+  if (params.token_hash) {
+    const qs = new URLSearchParams({ token_hash: params.token_hash, type: params.type ?? "magiclink" });
+    redirect(`/auth/confirm?${qs.toString()}`);
+  }
+
   return (
     <Box
       sx={{
