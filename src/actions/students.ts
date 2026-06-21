@@ -165,6 +165,8 @@ export async function editarAluno(formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Não autenticado." };
 
+  if (!classId) return { error: "Classe inválida." };
+
   const admin = createAdminClient();
   const { error } = await admin.from("students").update({
     name: parsed.data.name.trim(),
@@ -172,7 +174,7 @@ export async function editarAluno(formData: FormData) {
     city: parsed.data.city?.trim() ?? null,
     responsible_name: parsed.data.responsible_name?.trim() ?? null,
     responsible_phone: parsed.data.responsible_phone?.trim() ?? null,
-  }).eq("id", id);
+  }).eq("id", id).eq("class_id", classId);
 
   if (error) return { error: "Erro ao salvar." };
 

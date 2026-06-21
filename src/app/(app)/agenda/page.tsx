@@ -25,14 +25,19 @@ export default async function AgendaPage() {
 
   if (!activeOrgId) redirect("/onboarding");
 
+  const isAdmin = myRole === "admin" || myRole === "superadmin";
+
   let classIds: string[] = [];
-  if (myRole === "admin" || myRole === "superadmin") {
-    const { data } = await admin.from("classes").select("id").eq("org_id", activeOrgId);
-    classIds = data?.map(c => c.id) ?? [];
-  } else {
-    const { data } = await admin.from("class_teachers").select("class_id").eq("user_id", user.id);
-    classIds = data?.map(c => c.class_id) ?? [];
-  }
+  const { data: classes } = isAdmin
+    ? await admin.from("classes").select("id, name").eq("org_id", activeOrgId).order("name")
+    : await admin.from("classes").select("id, name").in(
+        "id",
+        (await admin.from("class_teachers").select("class_id").eq("user_id", user.id)).data?.map(c => c.class_id) ?? []
+      ).order("name");
+
+  classIds = classes?.map(c => c.id) ?? [];
+
+  const classNameMap = Object.fromEntries((classes ?? []).map(c => [c.id, c.name]));
 
   const now = new Date();
   const from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
@@ -47,16 +52,6 @@ export default async function AgendaPage() {
         .lte("date", to)
         .order("date")
     : { data: [] };
-
-  const { data: classes } = myRole === "admin" || myRole === "superadmin"
-    ? await admin.from("classes").select("id, name").eq("org_id", activeOrgId).order("name")
-    : await admin.from("classes").select("id, name").in("id", classIds).order("name");
-
-  const meetingClassIds = [...new Set((meetings ?? []).map(m => m.class_id))];
-  const { data: classNames } = meetingClassIds.length > 0
-    ? await admin.from("classes").select("id, name").in("id", meetingClassIds)
-    : { data: [] };
-  const classNameMap = Object.fromEntries((classNames ?? []).map(c => [c.id, c.name]));
 
   const meetingsFormatted = (meetings ?? []).map(m => ({
     id: m.id,

@@ -59,7 +59,7 @@ export async function concluirEncontro(payload: {
         student_id: a.student_id,
         class_id,
         value: presence_points,
-        reason: "Presença",
+        reason: `Presença [${meeting_id}]`,
         recorded_by: user.id,
       });
     }
@@ -68,23 +68,20 @@ export async function concluirEncontro(payload: {
         student_id: a.student_id,
         class_id,
         value: a.extra_points,
-        reason: a.extra_reason || "Pontos extras",
+        reason: `${a.extra_reason || "Pontos extras"} [${meeting_id}]`,
         recorded_by: user.id,
       });
     }
   }
 
   if (pointRows.length > 0) {
-    // Remove pontos anteriores do mesmo encontro para evitar duplicatas ao re-concluir
-    const studentIds = attendance.map(a => a.student_id);
+    // Remove pontos anteriores do mesmo encontro usando o meeting_id embutido no reason
+    // Formato: "Presença [meeting_id]" e "Pontos extras [meeting_id]"
     await admin
       .from("points")
       .delete()
       .eq("class_id", class_id)
-      .in("student_id", studentIds)
-      .eq("reason", "Presença")
-      // filtra pelos criados no mesmo dia do encontro para não apagar histórico
-      .gte("created_at", new Date(new Date().setHours(0, 0, 0, 0)).toISOString());
+      .like("reason", `%[${meeting_id}]`);
 
     await admin.from("points").insert(pointRows);
   }

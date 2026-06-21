@@ -62,7 +62,7 @@ export async function enviarConvite(formData: FormData) {
     .insert({
       org_id: org.id,
       email,
-      code: Math.random().toString(36).slice(2, 10).toUpperCase(),
+      code: crypto.randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase(),
       created_by: user.id,
     })
     .select("token")

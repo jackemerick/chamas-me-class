@@ -4,24 +4,13 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
 import { z } from "zod";
+import { getActiveOrgId } from "@/lib/get-active-org";
 
 const classSchema = z.object({
   name: z.string().min(2, "Mínimo 2 caracteres").max(80),
   group_label: z.string().max(40).optional(),
 });
-
-async function getActiveOrgId(userId: string): Promise<string | null> {
-  const cookieStore = await cookies();
-  const admin = createAdminClient();
-  const { data: memberships } = await admin
-    .from("org_members")
-    .select("org_id")
-    .eq("user_id", userId);
-  const activeOrgId = cookieStore.get("active_org")?.value ?? memberships?.[0]?.org_id;
-  return activeOrgId ?? null;
-}
 
 export async function criarTurma(formData: FormData) {
   const parsed = classSchema.safeParse({
@@ -67,13 +56,16 @@ export async function editarTurma(formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Não autenticado." };
 
+  const orgId = await getActiveOrgId(user.id);
+  if (!orgId) return { error: "Nenhuma igreja ativa." };
+
   const admin = createAdminClient();
   const { error } = await admin.from("classes").update({
     name: parsed.data.name,
     group_label: parsed.data.group_label ?? null,
     updated_by: user.id,
     updated_at: new Date().toISOString(),
-  }).eq("id", id);
+  }).eq("id", id).eq("org_id", orgId);
 
   if (error) return { error: "Erro ao salvar." };
 
