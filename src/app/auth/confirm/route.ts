@@ -15,10 +15,14 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient();
     const { error } = await supabase.auth.verifyOtp({ type: resolvedType, token_hash });
 
+    console.log("[auth/confirm]", { token_hash: token_hash.slice(0, 20), type: resolvedType, error: error?.message });
+
     if (!error) {
       return NextResponse.redirect(`${origin}${next}`);
     }
+
+    return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error.message)}`);
   }
 
-  return NextResponse.redirect(`${origin}/login?error=link_invalido`);
+  return NextResponse.redirect(`${origin}/login?error=sem_token`);
 }
